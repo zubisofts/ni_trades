@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "297736078876",
+    "project_id": "ni-trades",
+    "storage_bucket": "ni-trades.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:297736078876:android:d01cd83dc6b70517ec41d9",
+        "android_client_info": {
+          "package_name": "com.example.ni_trades"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "297736078876-hckj6gbcobggq7iq51fsm31k514e0al8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_QJ-AD0aSypGDTWTJEQ8KWk-XUIBNzxg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "297736078876-hckj6gbcobggq7iq51fsm31k514e0al8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "297736078876-tumun1760thrbamjjph02ashtg1e62bi.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.niTrades"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
