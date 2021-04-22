@@ -132,3 +132,23 @@ class FetchCategoriesErrorState extends DataState {
 }
 
 class CategoriesLoadingState extends DataState {}
+
+class TransactionsLoadingState extends DataState {}
+
+class TransactionsLoadErrorState extends DataState {
+  final String error;
+
+  TransactionsLoadErrorState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class TransactionsLoadedState extends DataState {
+  final List<NiTransacton> transactions;
+
+  TransactionsLoadedState(this.transactions);
+
+  @override
+  List<Object> get props => [transactions];
+}

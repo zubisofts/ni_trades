@@ -1,17 +1,25 @@
 import 'dart:convert';
 
-class Investment {
+import 'package:equatable/equatable.dart';
+
+class Investment with EquatableMixin {
   String id;
   String packageId;
   String userId;
+  String refId;
   int amount;
   int startDate;
+  bool active;
+  bool isDue;
   Investment({
     required this.id,
     required this.packageId,
     required this.userId,
+    required this.refId,
     required this.amount,
     required this.startDate,
+    required this.active,
+    required this.isDue,
   });
 
 
@@ -19,15 +27,21 @@ class Investment {
     String? id,
     String? packageId,
     String? userId,
+    String? refId,
     int? amount,
     int? startDate,
+    bool? active,
+    bool? isDue,
   }) {
     return Investment(
       id: id ?? this.id,
       packageId: packageId ?? this.packageId,
       userId: userId ?? this.userId,
+      refId: refId ?? this.refId,
       amount: amount ?? this.amount,
       startDate: startDate ?? this.startDate,
+      active: active ?? this.active,
+      isDue: isDue ?? this.isDue,
     );
   }
 
@@ -36,8 +50,11 @@ class Investment {
       'id': id,
       'packageId': packageId,
       'userId': userId,
+      'refId': refId,
       'amount': amount,
       'startDate': startDate,
+      'active': active,
+      'isDue': isDue,
     };
   }
 
@@ -46,8 +63,11 @@ class Investment {
       id: map['id'],
       packageId: map['packageId'],
       userId: map['userId'],
+      refId: map['refId'],
       amount: map['amount'],
       startDate: map['startDate'],
+      active: map['active'],
+      isDue: map['isDue'],
     );
   }
 
@@ -56,28 +76,19 @@ class Investment {
   factory Investment.fromJson(String source) => Investment.fromMap(json.decode(source));
 
   @override
-  String toString() {
-    return 'Investment(id: $id, packageId: $packageId, userId: $userId, amount: $amount, startDate: $startDate)';
-  }
+  bool get stringify => true;
 
   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-  
-    return other is Investment &&
-      other.id == id &&
-      other.packageId == packageId &&
-      other.userId == userId &&
-      other.amount == amount &&
-      other.startDate == startDate;
-  }
-
-  @override
-  int get hashCode {
-    return id.hashCode ^
-      packageId.hashCode ^
-      userId.hashCode ^
-      amount.hashCode ^
-      startDate.hashCode;
+  List<Object> get props {
+    return [
+      id,
+      packageId,
+      userId,
+      refId,
+      amount,
+      startDate,
+      active,
+      isDue,
+    ];
   }
 }

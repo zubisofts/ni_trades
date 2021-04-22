@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/blocs/data/data_bloc.dart';
+import 'package:ni_trades/screens/homescreen/widgets/balance_widget.dart';
 import 'package:ni_trades/screens/homescreen/widgets/recent_investments_widget.dart';
 import 'package:ni_trades/screens/investment/investment_selection_screen.dart';
 import 'package:ni_trades/util/constants.dart';
@@ -20,6 +21,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   @override
   void initState() {
     context.read<DataBloc>().add(FetchUserWalletEvent(AuthBloc.uid!));
+    context.read<DataBloc>().add(FetchUserDetailsEvent(AuthBloc.uid!));
     super.initState();
   }
 
@@ -49,21 +51,30 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Good Afternoon',
+                        Text('Good ${AppUtils.greet}!',
                             style: TextStyle(
-                              color: Colors.grey,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18.0,
-                            )),
+                                color: Colors.grey,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold)),
                         SizedBox(
                           height: 8.0,
                         ),
-                        Text('Nzubechi',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              fontWeight: FontWeight.w900,
-                              fontSize: 26.0,
-                            )),
+                        BlocBuilder<DataBloc, DataState>(
+                          buildWhen: (previous, current) =>
+                              current is UserDetailsFetchedState,
+                          builder: (context, state) {
+                            if (state is UserDetailsFetchedState) {
+                              return Text('${state.user.lastName}',
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: 26.0,
+                                  ));
+                            }
+                            return SizedBox.shrink();
+                          },
+                        ),
                       ],
                     ),
                     InkWell(
@@ -95,7 +106,7 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                     borderRadius: BorderRadius.circular(12.0)),
                 child: Container(
                   width: size.width,
-                  height: size.width * 0.35,
+                  // height: size.width * 0.35,
                   padding: EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12.0),
@@ -125,20 +136,13 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                 current is UserWalletFetchedState,
                             builder: (context, state) {
                               if (state is UserWalletFetchedState) {
-                                print('Wallets fetched: $state');
                                 return BalanceWidget(
-                                    balance: state.wallet.balance);
+                                  balance: state.wallet.balance,
+                                  textColor:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                );
                               }
-                              // if (state is FetchUser) {
-                              //   return TextButton(
-                              //       onPressed: () {},
-                              //       style: TextButton.styleFrom(
-                              //           backgroundColor: Colors.blueGrey),
-                              //       child: Text(
-                              //         'Error! Reload Balance',
-                              //         style: TextStyle(color: Colors.white),
-                              //       ));
-                              // }
+
                               return Text('NGN *******',
                                   style: TextStyle(
                                       color: Colors.black,
@@ -191,58 +195,6 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
   Future<void> _onRefresh() async {
     await Future.delayed(Duration(seconds: 2));
     context.read<DataBloc>().add(FetchUserWalletEvent(AuthBloc.uid!));
-  }
-}
-
-class BalanceWidget extends StatefulWidget {
-  const BalanceWidget({
-    Key? key,
-    required this.balance,
-  }) : super(key: key);
-
-  final dynamic balance;
-
-  @override
-  _BalanceWidgetState createState() => _BalanceWidgetState();
-}
-
-class _BalanceWidgetState extends State<BalanceWidget> {
-  late bool isWalletVisible;
-  late NumberFormat currencyFormatter;
-
-  @override
-  void initState() {
-    currencyFormatter = NumberFormat.currency(
-      decimalDigits: 2,
-      name: "₦",
-    );
-    isWalletVisible = true;
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Text(
-            '${isWalletVisible ? currencyFormatter.format(widget.balance) : '*******'}',
-            style: TextStyle(
-                color: Colors.black,
-                fontSize: 32.0,
-                fontWeight: FontWeight.bold)),
-        SizedBox(
-          width: 16.0,
-        ),
-        IconButton(
-          icon: Icon(isWalletVisible ? Icons.visibility_off : Icons.visibility),
-          onPressed: () {
-            setState(() {
-              isWalletVisible = !isWalletVisible;
-            });
-          },
-        )
-      ],
-    );
   }
 }
 
@@ -354,10 +306,8 @@ class _QuickActionsWidgetState extends State<QuickActionsWidget> {
   }
 
   void fundWallet(PaystackPlugin paystackPlugin, dynamic amount) async {
-    bool paymentSuccess =
-        await AppUtils.makePayment(context, paystackPlugin, amount);
-    if (paymentSuccess) {
-      print('*********************$amount*********************');
+    String? refId = await AppUtils.makePayment(context, paystackPlugin, amount);
+    if (refId != null) {
       context
           .read<DataBloc>()
           .add(FundWalletEvent(amount: amount, userId: AuthBloc.uid!));

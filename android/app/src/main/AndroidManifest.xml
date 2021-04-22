@@ -1,5 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.ni_trades">
+
+  <uses-permission android:name="android.permission.INTERNET"/>
+
    <application
         android:label="ni_trades"
         android:icon="@mipmap/ic_launcher">

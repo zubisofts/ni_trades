@@ -82,6 +82,7 @@ class _InvestmentSelectionScreenState extends State<InvestmentSelectionScreen> {
                               'There are no investment packages at the moment, come back later',
                               textAlign: TextAlign.center,
                               style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
                                 fontSize: 18.0,
                               ),
                             ),

@@ -8,6 +8,7 @@ import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/model/category.dart';
 import 'package:ni_trades/model/investment.dart';
 import 'package:ni_trades/model/investment_package.dart';
+import 'package:ni_trades/model/transaction.dart';
 import 'package:ni_trades/model/user_model.dart' as NIUser;
 import 'package:ni_trades/model/wallet.dart';
 import 'package:ni_trades/repository/data_repo.dart';
@@ -70,6 +71,10 @@ class DataBloc extends Bloc<DataEvent, DataState> {
 
     if (event is FetchCategoriesEvent) {
       yield* _mapFetchCategoriesEvent();
+    }
+
+    if (event is LoadTransactionsEvent) {
+      yield* _mapTransactionsLoadingEventToState();
     }
   }
 
@@ -136,6 +141,16 @@ class DataBloc extends Bloc<DataEvent, DataState> {
       yield FetchCategoriesErrorState(response.message!);
     } else {
       yield CategoriesFetchedState(response);
+    }
+  }
+
+  Stream<DataState> _mapTransactionsLoadingEventToState() async* {
+    yield TransactionsLoadingState();
+    var transactions = await dataService.transactions;
+    if (transactions is FirebaseException) {
+      yield TransactionsLoadErrorState(transactions.message!);
+    } else {
+      yield TransactionsLoadedState(transactions);
     }
   }
 }

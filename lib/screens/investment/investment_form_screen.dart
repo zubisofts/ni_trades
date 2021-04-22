@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_paystack/flutter_paystack.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/number_symbols_data.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/blocs/data/data_bloc.dart';
 import 'package:ni_trades/model/investment.dart';
@@ -24,10 +26,17 @@ class _InvestmentFormScreenState extends State<InvestmentFormScreen> {
   final TextEditingController amountTextController = TextEditingController();
 
   late PaystackPlugin paystack;
+  late int returnsAmount;
+  late NumberFormat currencyFormatter;
 
   @override
   void initState() {
     initPayStack();
+    returnsAmount = 0;
+    currencyFormatter = NumberFormat.currency(
+      decimalDigits: 0,
+      name: "₦",
+    );
     super.initState();
   }
 
@@ -88,7 +97,8 @@ class _InvestmentFormScreenState extends State<InvestmentFormScreen> {
                   try {
                     if (double.parse(value!
                             .substring(1, value.length)
-                            .replaceAll('NGN', '')
+                            .replaceAll('₦', '')
+                            .replaceAll(',', '')
                             .trim()) <
                         1000) {
                       return 'Minimum amount required is 1000';
@@ -106,7 +116,18 @@ class _InvestmentFormScreenState extends State<InvestmentFormScreen> {
                     symbol: '₦ ', // or to remove symbol set ''.
                   )
                 ],
-                onChanged: (v) {},
+                onChanged: (v) {
+                  setState(() {
+                    int amount = int.parse(v
+                        .substring(1, v.length)
+                        .replaceAll('₦', '')
+                        .replaceAll(',', '')
+                        .trim());
+
+                    int rate = widget.investmentPackage.returns;
+                    returnsAmount = ((rate / 100) * amount).round();
+                  });
+                },
                 controller: amountTextController,
                 cursorColor: Theme.of(context).colorScheme.secondary,
                 cursorHeight: 24,
@@ -117,6 +138,16 @@ class _InvestmentFormScreenState extends State<InvestmentFormScreen> {
                     hintText: 'Minimum of 1,000',
                     hintStyle: TextStyle(color: Colors.grey)),
               ),
+            ),
+            SizedBox(
+              height: 16.0,
+            ),
+            Text(
+              'At the end of ${widget.investmentPackage.durationInMonths} months, you will get returns worth of ${currencyFormatter.format(returnsAmount)}',
+              style: TextStyle(
+                  fontSize: 16,
+                  // fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onPrimary),
             ),
             SizedBox(
               height: 32.0,
@@ -156,12 +187,15 @@ class _InvestmentFormScreenState extends State<InvestmentFormScreen> {
                           id: '',
                           packageId: widget.investmentPackage.id,
                           userId: AuthBloc.uid!,
+                          refId: '',
                           amount: int.parse(amountTextController.text
                               .substring(1, amountTextController.text.length)
                               .replaceAll('₦', '')
                               .replaceAll(',', '')
                               .trim()),
-                          startDate: DateTime.now().millisecondsSinceEpoch);
+                          startDate: DateTime.now().millisecondsSinceEpoch,
+                          active: true,
+                          isDue: false);
                       invest(investment, paystack);
                     },
                     child: Row(
@@ -193,11 +227,13 @@ class _InvestmentFormScreenState extends State<InvestmentFormScreen> {
   }
 
   void invest(Investment investment, PaystackPlugin paystackPlugin) async {
-    bool paymentSuccess =
+    var refId =
         await AppUtils.makePayment(context, paystackPlugin, investment.amount);
 
-    if (paymentSuccess) {
-      context.read<DataBloc>().add(InvestEvent(investment));
+    if (refId != null) {
+      context
+          .read<DataBloc>()
+          .add(InvestEvent(investment.copyWith(refId: refId)));
     }
   }
 }

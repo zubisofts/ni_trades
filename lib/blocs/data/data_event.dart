@@ -81,3 +81,6 @@ class FundWalletEvent extends DataEvent {
 
 // Categories event
 class FetchCategoriesEvent extends DataEvent {}
+
+// Transactions Event
+class LoadTransactionsEvent extends DataEvent{}

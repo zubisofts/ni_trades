@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'NI Trades',
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
+        theme: AppTheme.darkTheme,
         home: App(),
       ),
     );

@@ -10,23 +10,23 @@
             "request": "launch",
             "type": "dart"
         },
-        {
-            "name": "iphone_12",
-            "request": "launch",
-            "type": "dart",
-            "deviceId": "7A2F1031-7FDB-4B71-846E-042971CB55DC"
-        },
-        {
-            "name": "tecno_lb8a",
-            "request": "launch",
-            "type": "dart",
-            "deviceId": "192.168.43.233:5555"
-        }
-    ],
-    "compounds": [
-        {
-            "name": "Compound",
-            "configurations": ["ni_trades","iphone_12","tecno_lb8a"]
-        }
+    //     {
+    //         "name": "iphone_12",
+    //         "request": "launch",
+    //         "type": "dart",
+    //         "deviceId": "7A2F1031-7FDB-4B71-846E-042971CB55DC"
+    //     },
+    //     {
+    //         "name": "iPad",
+    //         "request": "launch",
+    //         "type": "dart",
+    //         "deviceId": "02080973-B13B-48A8-9FA8-8965270A5B8F"
+    //     }
+    // ],
+    // "compounds": [
+    //     {
+    //         "name": "Compound",
+    //         "configurations": ["ni_trades","iphone_12","iPad"]
+    //     }
     ]
 }

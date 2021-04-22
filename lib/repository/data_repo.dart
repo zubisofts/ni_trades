@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_paystack/flutter_paystack.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/model/category.dart';
 import 'package:ni_trades/model/investment.dart';
 import 'package:ni_trades/model/investment_package.dart';
+import 'package:ni_trades/model/transaction.dart';
 import 'package:ni_trades/model/user_model.dart' as NIUser;
 import 'package:ni_trades/model/wallet.dart';
 
@@ -103,12 +105,33 @@ class DataService {
           .collection('investments')
           .doc();
 
+      var package = await getPackageDetails(investment.packageId);
+      await logTransaction(NiTransacton(
+          id: '',
+          title: 'Investment',
+          description: 'You invested in ${package!.title}',
+          type: 'Invest',
+          transactionId: investment.refId,
+          timestamp: DateTime.now().millisecondsSinceEpoch));
       investment.id = investRef.id;
       investRef.set(investment.toMap());
 
       return investRef.id;
     } on FirebaseException catch (e) {
       return e;
+    }
+  }
+
+  Future<InvestmentPackage?> getPackageDetails(id) async {
+    try {
+      var snapshot = await _firebaseFirestore
+          .collection('investment_packages')
+          .doc(id)
+          .get();
+
+      return InvestmentPackage.fromMap(snapshot.data()!);
+    } on FirebaseException catch (e) {
+      return null;
     }
   }
 
@@ -149,6 +172,7 @@ class DataService {
         .collection("user_investments")
         .doc(userId)
         .collection('investments')
+        .where('active', isEqualTo: true)
         .snapshots()
         .map((snapshots) => snapshots.docs
             .map((doc) => Investment.fromMap(doc.data()!))
@@ -178,10 +202,44 @@ class DataService {
   }
 
   Stream<Category> category(String id) {
+    var time = FieldValue.serverTimestamp().toString();
+    print('SERVER TIME IS:$time');
     return _firebaseFirestore
         .collection('categories')
         .doc(id)
         .snapshots()
         .map((doc) => Category.fromMap(doc.data()!));
+  }
+
+  Stream<InvestmentPackage> fetchPackageDetails(packageId) => _firebaseFirestore
+      .collection('investment_packages')
+      .doc(packageId)
+      .snapshots()
+      .map((doc) => InvestmentPackage.fromMap(doc.data()!));
+
+  Future<void> logTransaction(NiTransacton transaction) async {
+    DocumentReference ref = _firebaseFirestore
+        .collection('user_transactions')
+        .doc(AuthBloc.uid)
+        .collection('transactions')
+        .doc();
+    var newTransaction = transaction.copyWith(id: ref.id);
+    ref.set(newTransaction.toMap());
+  }
+
+    Future<dynamic> get transactions async {
+    try {
+      var querySnapshots =
+          await _firebaseFirestore.collection('user_transactions')
+          .doc(AuthBloc.uid)
+          .collection('transactions').get();
+      return querySnapshots.docs
+          .map((doc) => NiTransacton.fromMap(doc.data()!))
+          .toList();
+    } on FirebaseException catch (e) {
+      return e;
+    } on SocketException catch (s) {
+      return s;
+    }
   }
 }

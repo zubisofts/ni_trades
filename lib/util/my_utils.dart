@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack/flutter_paystack.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class AppUtils {
   static String displayTimeAgoFromTimestamp(int millisecondsSinceEpoch,
@@ -54,13 +55,20 @@ class AppUtils {
     return time;
   }
 
-  static Future<bool> makePayment(BuildContext context,
+  static Future<String?> makePayment(BuildContext context,
       PaystackPlugin paystackPlugin, dynamic amount) async {
+    Uuid referenceKey = Uuid();
+    String ref = referenceKey.v1(options: {
+      'node': [0x01, 0x23, 0x45, 0x67, 0x89, 0xab],
+      'clockSeq': 0x1234,
+      'mSecs': new DateTime.now().millisecondsSinceEpoch,
+      'nSecs': 5678
+    });
     PaymentCard card = PaymentCard(
         number: '4084084084084081', cvc: '408', expiryMonth: 4, expiryYear: 22);
     Charge charge = Charge()
       ..amount = amount * 100
-      ..reference = 'ni_trade_pay_${DateTime.now().millisecondsSinceEpoch}'
+      ..reference = '$ref'
       ..card = card
       ..currency = 'NGN'
       ..putMetaData("name", "NI Trades")
@@ -79,6 +87,35 @@ class AppUtils {
 
     print('Transaction Response: ${response.status}');
 
-    return response.status;
+    return response.status ? ref : null;
+  }
+
+  static Stream<String> getInvestmentCountDown(int timestamp, int months) {
+    return Stream.periodic(Duration(seconds: 1), (data) {
+      var advanceDaysInMillis = (31 * months) * 8.64e+7;
+      var advanceDate =
+          DateTime.now().millisecondsSinceEpoch + advanceDaysInMillis;
+      var difference =
+          ((advanceDate - DateTime.now().millisecondsSinceEpoch) / 8.64e+7)
+              .round();
+      return '$difference';
+    });
+  }
+
+  static getInvestmentDueDate(int startDate, int months) {
+    var advanceDaysInMillis = ((31 * months) * 8.64e+7).round();
+    var date = (startDate + advanceDaysInMillis).round();
+    return getDateFromTimestamp(date);
+  }
+
+  static String get greet {
+    var hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Morning';
+    }
+    if (hour < 17) {
+      return 'Afternoon';
+    }
+    return 'Evening';
   }
 }

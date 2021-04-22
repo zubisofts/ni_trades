@@ -38,7 +38,7 @@ class _RecentInvestmentWidgetState extends State<RecentInvestmentWidget> {
       }, builder: (context, state) {
         if (state is UserInvestmentsFetchedState) {
           print('FetchUserInvestments:$state');
-          var investments = state.investments;
+          var investments = state.investments.take(2).toList();
 
           if (investments.isEmpty) {
             return Container(
@@ -60,12 +60,12 @@ class _RecentInvestmentWidgetState extends State<RecentInvestmentWidget> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      margin: EdgeInsets.symmetric(horizontal: 16.0),
-                      child: CircleAvatar(
-                        radius: 60.0,
-                      ),
-                    ),
+                    // Container(
+                    //   margin: EdgeInsets.symmetric(horizontal: 16.0),
+                    //   child: CircleAvatar(
+                    //     radius: 60.0,
+                    //   ),
+                    // ),
                     Expanded(
                       child: ListView.builder(
                         shrinkWrap: true,
@@ -133,7 +133,9 @@ class _RecentInvestmentWidgetState extends State<RecentInvestmentWidget> {
           return Text('An error occured:${state.error}');
         }
 
-        return Text('Loading');
+        return Center(
+            child: Container(
+                margin: EdgeInsets.all(45.0), child: Text('Loading')));
       }),
     );
   }

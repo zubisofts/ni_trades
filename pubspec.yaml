@@ -54,6 +54,7 @@ dependencies:
   permission_handler: ^3.0.0
   meta: ^1.1.8
   intl: ^0.17.0
+  uuid: 3.0.4
   shimmer: ^1.1.1
   cached_network_image: ^3.0.0
   bubble: ^1.1.9+1

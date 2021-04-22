@@ -1,13 +1,10 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_paystack/flutter_paystack.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:getwidget/getwidget.dart';
 import 'package:flutter/material.dart';
-import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/screens/homescreen/dashboard.dart';
 import 'package:ni_trades/screens/investment/investment_selection_screen.dart';
 import 'package:ni_trades/screens/investment/investments_screen.dart';
-import 'package:ni_trades/util/constants.dart';
+import 'package:ni_trades/screens/payment/payment_screen.dart';
+import 'package:ni_trades/screens/transactions/transactions_screen.dart';
 import 'package:page_transition/page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,8 +19,8 @@ class _HomeScreenState extends State<HomeScreen>
   List pages = [
     DashBoardScreen(),
     InvestmentScreen(),
-    Container(color: Colors.blue),
-    Container(color: Colors.pink),
+    PaymentScreen(),
+    TransactionsScreen(),
   ];
 
   // GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
@@ -81,8 +78,8 @@ class _HomeScreenState extends State<HomeScreen>
                   color: activePage == 3 ? Colors.transparent : Colors.blueGrey,
                   colorBlendMode: BlendMode.srcATop,
                   width: 24,
-                  semanticsLabel: 'Withdraw'),
-              label: "Withdraw")
+                  semanticsLabel: 'Transactions'),
+              label: "Transactions")
         ],
       ),
       body: Container(

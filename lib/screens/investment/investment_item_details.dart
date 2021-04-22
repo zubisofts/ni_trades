@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:ni_trades/model/investment.dart';
 import 'package:ni_trades/model/investment_package.dart';
 import 'package:ni_trades/screens/investment/investment_form_screen.dart';
 
@@ -20,6 +19,7 @@ class _InvestmentDetailsScreenState extends State<InvestmentDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
       padding: EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -27,6 +27,7 @@ class _InvestmentDetailsScreenState extends State<InvestmentDetailsScreen> {
           Expanded(
             child: SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     '${widget.investmentPackage.title}',
@@ -57,13 +58,19 @@ class _InvestmentDetailsScreenState extends State<InvestmentDetailsScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Duration:'),
+                          Text(
+                            'Duration:',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary),
+                          ),
                           SizedBox(
                             width: 16.0,
                           ),
                           Text(
                             '${widget.investmentPackage.durationInMonths} months',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onPrimary),
                           )
                         ],
                       ),
@@ -83,13 +90,15 @@ class _InvestmentDetailsScreenState extends State<InvestmentDetailsScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text('Returns:'),
+                          Text('Returns:', style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),),
                           SizedBox(
                             width: 16.0,
                           ),
                           Text(
                             '${widget.investmentPackage.returns} %',
-                            style: TextStyle(fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onPrimary),
                           )
                         ],
                       ),
@@ -100,14 +109,18 @@ class _InvestmentDetailsScreenState extends State<InvestmentDetailsScreen> {
                   ),
                   Text(
                     'About this investment',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontWeight: FontWeight.bold, fontSize: 18),
                   ),
                   SizedBox(
                     height: 8.0,
                   ),
                   Text(
                     '${widget.investmentPackage.description}',
-                    style: TextStyle(height: 1.5, fontSize: 16),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      height: 1.5, fontSize: 16),
                   ),
                 ],
               ),
