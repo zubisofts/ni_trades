@@ -5,6 +5,6 @@ This is an investment platform created to help people invest their money into th
 
 ## Demo Screenshots
 
-|  ![Login Screen](https://github.com/zubisofts/ni_trades/blob/master/assets/login.png?raw=true =250px)|  |
+|  ![Login Screen](https://github.com/zubisofts/ni_trades/blob/master/assets/login.png?raw=true)|  |
 |--|--|
 |  |  |
