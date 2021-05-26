@@ -1,16 +1,6 @@
-# ni_trades
+# NI Trades
 
-A new Flutter project.
+This is an investment platform created to help people invest their money into the Nigria industry ranging from Agriculture, Fashion, Technology, etc. This is to empower productivity for average Nigerians where they get returns after investing for a specified period.
 
-## Getting Started
+## Demo Screenshots
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
