@@ -30,7 +30,9 @@ class _RecentInvestmentWidgetState extends State<RecentInvestmentWidget> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+      elevation: 0,
+      color: Theme.of(context).cardColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
       child: BlocBuilder<DataBloc, DataState>(buildWhen: (previous, current) {
         return current is UserInvestmentsFetchedState ||
             // current is FetchUserInvestmentsLoadingState ||

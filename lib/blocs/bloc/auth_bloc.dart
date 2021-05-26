@@ -55,10 +55,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       NIUser.User userModel, String password) async* {
     yield SignUpLoadingState();
     var res = await authService.signUpUser(user: userModel, password: password);
-    if (res is NIUser.User) {
-      yield UserSignedUpState();
+    if (res.error == null) {
+      uid = res.data!.id;
+      yield UserSignedUpState(res.data!);
     } else {
-      yield SignupUserErrorState(res);
+      yield SignupUserErrorState(res.error!);
     }
   }
 
@@ -66,11 +67,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       String email, String password) async* {
     yield LoginUserLoadingState();
     var res = await authService.loginUserWithEmailAndPassword(email, password);
-    if (res is User) {
-      uid = res.uid;
-      yield UserLoggedInState(res);
+    if (res.error == null) {
+      uid = res.data!.id;
+      yield UserLoggedInState(res.data!);
     } else {
-      yield LoginUserErrorState(res);
+      yield LoginUserErrorState(res.error!);
     }
   }
 
@@ -80,6 +81,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             ? AuthenticationStatus.authenticated
             : AuthenticationStatus.unauthenticated,
         user);
-    uid = user!.uid;
+    if (user != null) {
+      uid = user.uid;
+    }
   }
 }

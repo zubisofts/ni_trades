@@ -5,12 +5,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack/flutter_paystack.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
+import 'package:ni_trades/model/api_response.dart';
 import 'package:ni_trades/model/category.dart';
 import 'package:ni_trades/model/investment.dart';
 import 'package:ni_trades/model/investment_package.dart';
 import 'package:ni_trades/model/transaction.dart';
 import 'package:ni_trades/model/user_model.dart' as NIUser;
 import 'package:ni_trades/model/wallet.dart';
+import 'package:ni_trades/util/constants.dart';
+import 'package:uuid/uuid.dart';
 
 class DataService {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -61,19 +64,21 @@ class DataService {
   Future<List<InvestmentPackage>> investmentsPackages(String categoryId) async {
     var iDocs = await _firebaseFirestore
         .collection('user_investments')
-        .doc(AuthBloc.uid!)
-        .collection('investments')
+        .where('userId', isEqualTo: AuthBloc.uid)
         .get();
     List<String> ids =
         iDocs.docs.map((e) => Investment.fromMap(e.data()!).packageId).toList();
 
     QuerySnapshot snapshot;
     if (categoryId.isEmpty) {
-      snapshot =
-          await _firebaseFirestore.collection("investment_packages").get();
+      snapshot = await _firebaseFirestore
+          .collection("investment_packages")
+          .where("isOpen", isEqualTo: true)
+          .get();
     } else {
       snapshot = await _firebaseFirestore
           .collection("investment_packages")
+          .where("isOpen", isEqualTo: true)
           .where("categoryId", isEqualTo: categoryId)
           .get();
     }
@@ -82,43 +87,45 @@ class DataService {
         .map((doc) => InvestmentPackage.fromMap(doc.data()!))
         .toList();
 
-    if (ids.isNotEmpty) {
-      List<InvestmentPackage> d = [];
-      d.addAll(packages);
-      packages.forEach((element) {
-        if (ids.contains(element.id)) {
-          d.remove(element);
-        }
-      });
+    // if (ids.isNotEmpty) {
+    //   List<InvestmentPackage> d = [];
+    //   d.addAll(packages);
+    //   packages.forEach((element) {
+    //     if (ids.contains(element.id)) {
+    //       d.remove(element);
+    //     }
+    //   });
 
-      return d;
-    }
+    //   return d;
+    // }
 
     return packages;
   }
 
-  Future<dynamic> invest(Investment investment) async {
+  Future<ApiResponse> invest(
+      BuildContext context, Investment investment, PaymentCard card) async {
     try {
-      var investRef = _firebaseFirestore
-          .collection('user_investments')
-          .doc(investment.userId)
-          .collection('investments')
-          .doc();
+      var response = await makePayment(context, investment, card);
+      if (!response.error) {
+        var investRef = _firebaseFirestore.collection('user_investments').doc();
 
-      var package = await getPackageDetails(investment.packageId);
-      await logTransaction(NiTransacton(
-          id: '',
-          title: 'Investment',
-          description: 'You invested in ${package!.title}',
-          type: 'Invest',
-          transactionId: investment.refId,
-          timestamp: DateTime.now().millisecondsSinceEpoch));
-      investment.id = investRef.id;
-      investRef.set(investment.toMap());
+        var package = await getPackageDetails(investment.packageId);
+        await logTransaction(NiTransacton(
+            id: '',
+            title: 'New Investment',
+            description: 'You invested in ${package!.title}',
+            type: 'Invest',
+            transactionId: investment.refId,
+            timestamp: DateTime.now().millisecondsSinceEpoch));
+        investment.id = investRef.id;
+        investRef.set(investment.copyWith(id: investRef.id).toMap());
 
-      return investRef.id;
+        return ApiResponse(data: investRef.id, error: false);
+      } else {
+        return ApiResponse(data: "Unable to complete request!", error: true);
+      }
     } on FirebaseException catch (e) {
-      return e;
+      return ApiResponse(data: e.message, error: false);
     }
   }
 
@@ -170,8 +177,7 @@ class DataService {
   Stream<List<Investment>> investments(String userId) {
     return _firebaseFirestore
         .collection("user_investments")
-        .doc(userId)
-        .collection('investments')
+        .where("userId", isEqualTo: userId)
         .where('active', isEqualTo: true)
         .snapshots()
         .map((snapshots) => snapshots.docs
@@ -227,12 +233,13 @@ class DataService {
     ref.set(newTransaction.toMap());
   }
 
-    Future<dynamic> get transactions async {
+  Future<dynamic> get transactions async {
     try {
-      var querySnapshots =
-          await _firebaseFirestore.collection('user_transactions')
+      var querySnapshots = await _firebaseFirestore
+          .collection('user_transactions')
           .doc(AuthBloc.uid)
-          .collection('transactions').get();
+          .collection('transactions')
+          .get();
       return querySnapshots.docs
           .map((doc) => NiTransacton.fromMap(doc.data()!))
           .toList();
@@ -240,6 +247,50 @@ class DataService {
       return e;
     } on SocketException catch (s) {
       return s;
+    }
+  }
+
+  Future<ApiResponse> makePayment(
+      BuildContext context, Investment investment, PaymentCard card) async {
+    PaystackPlugin paystackPlugin = PaystackPlugin();
+    await paystackPlugin.initialize(publicKey: Constants.PAYSTACK_PUBLIC_API);
+    try {
+      Uuid referenceKey = Uuid();
+      String ref = referenceKey.v1(options: {
+        'node': [0x01, 0x23, 0x45, 0x67, 0x89, 0xab],
+        'clockSeq': 0x1234,
+        'mSecs': new DateTime.now().millisecondsSinceEpoch,
+        'nSecs': 5678
+      });
+
+      investment = investment.copyWith(refId: ref);
+      Charge charge = Charge()
+        ..amount = investment.amount * 100
+        ..reference = '$ref'
+        ..card = card
+        ..currency = 'NGN'
+        ..putMetaData("name", "NI Trades")
+        // or ..accessCode = _getAccessCodeFrmInitialization()
+        ..email = 'zubitex40@email.com'
+        ..putCustomField('Charged From', 'NI Trades');
+
+      // CheckoutResponse response =
+      //     await paystackPlugin.chargeCard(context, charge: charge);
+
+      CheckoutResponse response = await paystackPlugin.chargeCard(
+        context,
+        charge: charge,
+      );
+
+      print('Transaction Response: ${response.status}');
+
+      if (response.status) {
+        return ApiResponse(data: ref, error: false);
+      } else {
+        return ApiResponse(data: ref, error: true);
+      }
+    } catch (ex) {
+      return ApiResponse(data: ex, error: true);
     }
   }
 }

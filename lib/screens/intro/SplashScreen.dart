@@ -1,48 +1,44 @@
+import 'package:entry/entry.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/screens/auth_screen/login_screen.dart';
 import 'package:ni_trades/screens/homescreen/homescreen.dart';
+import 'package:ni_trades/wrapper.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  @override
+  void initState() {
+    Future.delayed(Duration(seconds: 3)).then((value) {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (context) => Wrapper(),
+      ));
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+        SystemUiOverlayStyle.light.copyWith(statusBarColor: Colors.white));
     return Scaffold(
       body: Container(
-        color: Colors.white,
-        child: BlocConsumer<AuthBloc, AuthState>(
-          buildWhen: (previous, current) => current is AuthUserChangedState,
-          listener: (context, state) {
-            if (state is AuthUserChangedState) {
-              Future.delayed(Duration(seconds: 3)).then((value)  {
-                if (state.status == AuthenticationStatus.authenticated) {
-                debugPrint('User has logged in with the id: ${state.user?.uid}');
-                // Navigator.of(context).pushReplacement(MaterialPageRoute(
-                //   builder: (context) => HomeScreen(),
-                // ));
-              } else {
-                debugPrint('User has logged out the id: ${state.user?.uid}');
-                // Navigator.of(context).pushReplacement(MaterialPageRoute(
-                //   builder: (context) => LoginScreen(),
-                // ));
-              }
-              });
-
-            }
-          },
-          builder: (context, state) {
-            if(state is AuthUserChangedState){
-              if (state.status == AuthenticationStatus.authenticated) {
-                debugPrint('User has logged in with the id: ${state.user?.uid}');
-                return HomeScreen();
-            }else{
-              return LoginScreen();
-            }
-          }
-          return Image.asset('assets/images/wallet.png', width: 200.0);
-        
-          })
-      ),
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          color: Colors.white,
+          child: Center(
+              child: Entry(
+                  scale: 1,
+                  curve: Curves.bounceInOut,
+                  duration: Duration(milliseconds: 500),
+                  child: Image.asset('assets/images/logo_size.jpg',
+                      width: 200.0)))),
     );
   }
 }

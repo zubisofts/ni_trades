@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_paystack/flutter_paystack.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/model/category.dart';
 import 'package:ni_trades/model/investment.dart';
@@ -50,7 +52,8 @@ class DataBloc extends Bloc<DataEvent, DataState> {
     }
 
     if (event is InvestEvent) {
-      yield* _mapInvestEventToState(event.investment);
+      yield* _mapInvestEventToState(
+          event.investment, event.context, event.card);
     }
 
     if (event is FetchUserDetailsEvent) {
@@ -91,15 +94,15 @@ class DataBloc extends Bloc<DataEvent, DataState> {
     yield InvestmentPackagesFetchedState(investments);
   }
 
-  Stream<DataState> _mapInvestEventToState(investment) async* {
+  Stream<DataState> _mapInvestEventToState(
+      investment, BuildContext context, PaymentCard card) async* {
     yield InvestLoadingState();
     await Future.delayed(Duration(seconds: 2));
-    var result = await dataService.invest(investment);
-    if (result is String) {
-      yield InvestedState(result);
-    }
-    if (result is FirebaseException) {
-      yield InvestErrorState(result.message!);
+    var result = await dataService.invest(context, investment, card);
+    if (!result.error) {
+      yield InvestedState(result.data);
+    } else {
+      yield InvestErrorState(result.data!);
     }
   }
 

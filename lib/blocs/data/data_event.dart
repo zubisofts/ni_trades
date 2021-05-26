@@ -26,11 +26,13 @@ class FetchUserInvestmentsEvent extends DataEvent {
 
 class InvestEvent extends DataEvent {
   final Investment investment;
+  final BuildContext context;
+  final PaymentCard card;
 
-  InvestEvent(this.investment);
+  InvestEvent(this.investment, this.context, this.card);
 
   @override
-  List<Object> get props => [investment];
+  List<Object> get props => [investment, context, card];
 }
 
 class FetchUserDetailsEvent extends DataEvent {
@@ -83,4 +85,4 @@ class FundWalletEvent extends DataEvent {
 class FetchCategoriesEvent extends DataEvent {}
 
 // Transactions Event
-class LoadTransactionsEvent extends DataEvent{}
+class LoadTransactionsEvent extends DataEvent {}

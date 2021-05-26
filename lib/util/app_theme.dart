@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:ni_trades/util/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -7,11 +8,14 @@ class AppTheme {
   AppTheme._();
 
   static final ThemeData lightTheme = ThemeData(
-    // fontFamily: 'Poppins-Light',
-    scaffoldBackgroundColor: Colors.grey[100],
-    fontFamily: "Roboto",
+    scaffoldBackgroundColor: Colors.white,
+    fontFamily: "Poppins-Medium",
     appBarTheme: AppBarTheme(
       color: Colors.white,
+      brightness: Brightness.light,
+      systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Colors.white,
+      ),
       textTheme: TextTheme(
         caption: TextStyle(
           color: Colors.black,
@@ -25,14 +29,14 @@ class AppTheme {
       primary: Colors.white,
       onPrimary: Colors.black,
       primaryVariant: Colors.white38,
-      secondary: Color(0xFFD4AF37),
+      secondary: Color(0xFFfcfa23c),
       onSecondary: Colors.blueGrey,
     ),
     cardTheme: CardTheme(
       color: Colors.white,
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: Colors.grey[350],
+        backgroundColor: Colors.white,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.black),
     iconTheme: IconThemeData(
@@ -49,13 +53,20 @@ class AppTheme {
       ),
     ),
   );
+  // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  //   SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
+  //   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
 
   static final ThemeData darkTheme = ThemeData(
-    scaffoldBackgroundColor: Color(0xFF000a12),
-    cardColor: Color(0xFF303030),
-    fontFamily: "Roboto",
+    scaffoldBackgroundColor: Color(0xFF121212),
+    cardColor: Color(0xFF393939),
+    fontFamily: "Poppins-Medium",
     appBarTheme: AppBarTheme(
-      color: Color(0xFF303030),
+      color: Color(0xFF121212),
+      brightness: Brightness.light,
+      systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
+        statusBarColor: Color(0xFF121212),
+      ),
       iconTheme: IconThemeData(
         color: Colors.white,
       ),
@@ -64,14 +75,14 @@ class AppTheme {
       primary: Colors.black,
       onPrimary: Colors.white,
       primaryVariant: Color(0xFF141d26),
-      secondary: Color(0xFFD4AF37),
+      secondary: Color(0xFFfcfa23c),
       onSecondary: Colors.white,
     ),
     cardTheme: CardTheme(
-      color: Color(0xFF303040),
+      color: Color(0xFF393939),
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-        backgroundColor: Color(0xFF000a20),
+        backgroundColor: Color(0xFF4f4a4c),
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white),
     iconTheme: IconThemeData(

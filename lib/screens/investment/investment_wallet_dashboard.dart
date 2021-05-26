@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 import 'package:ni_trades/model/investment.dart';
@@ -20,6 +21,8 @@ class InvestmentDashboardScreen extends StatefulWidget {
 class _InvestmentDashboardScreenState extends State<InvestmentDashboardScreen> {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+        Theme.of(context).appBarTheme.systemOverlayStyle!);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -52,11 +55,11 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
   late bool isWalletVisible;
   late NumberFormat currencyFormatter;
 
-  late Stream<InvestmentPackage> fetchPageInfo;
+  late Stream<InvestmentPackage> fetchPackageInfo;
 
   @override
   void initState() {
-    fetchPageInfo =
+    fetchPackageInfo =
         DataService().fetchPackageDetails(widget.investment.packageId);
     currencyFormatter = NumberFormat.currency(
       decimalDigits: 2,
@@ -72,7 +75,7 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         StreamBuilder<InvestmentPackage>(
-            stream: fetchPageInfo,
+            stream: fetchPackageInfo,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return Padding(
@@ -125,7 +128,7 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
                   height: 16.0,
                 ),
                 StreamBuilder<InvestmentPackage>(
-                  stream: fetchPageInfo,
+                  stream: fetchPackageInfo,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return StreamBuilder<String>(
@@ -206,12 +209,21 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
                       SizedBox(
                         height: 8.0,
                       ),
-                      Text(
-                          '${AppUtils.getInvestmentDueDate(widget.investment.startDate, 4)}',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold))
+                      StreamBuilder<InvestmentPackage>(
+                          stream: fetchPackageInfo,
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              return Text(
+                                  '${AppUtils.getInvestmentDueDate(widget.investment.startDate, snapshot.data!.durationInMonths)}',
+                                  style: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onPrimary,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold));
+                            }
+                            return Text('...');
+                          })
                     ],
                   ),
                 ),
@@ -242,19 +254,19 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
               SizedBox(
                 width: 16.0,
               ),
-              MaterialButton(
-                onPressed: widget.investment.active ? () {} : null,
-                padding: EdgeInsets.all(16.0),
-                color: Colors.red,
-                disabledColor: Colors.grey.shade600,
-                disabledTextColor: Theme.of(context).colorScheme.onPrimary,
-                textColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0)),
-                child: Text(
-                  'Cancel Investment',
-                ),
-              )
+              // MaterialButton(
+              //   onPressed: widget.investment.active ? () {} : null,
+              //   padding: EdgeInsets.all(16.0),
+              //   color: Colors.red,
+              //   disabledColor: Colors.grey.shade600,
+              //   disabledTextColor: Theme.of(context).colorScheme.onPrimary,
+              //   textColor: Colors.white,
+              //   shape: RoundedRectangleBorder(
+              //       borderRadius: BorderRadius.circular(8.0)),
+              //   child: Text(
+              //     'Cancel Investment',
+              //   ),
+              // )
             ],
           ),
         )

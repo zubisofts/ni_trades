@@ -36,11 +36,11 @@ class _BalanceWidgetState extends State<BalanceWidget> {
       child: Row(
         children: [
           Text(
-              '${isWalletVisible ? currencyFormatter.format(widget.balance) : '*******'}',
+              '${isWalletVisible ? currencyFormatter.format(widget.balance) : '₦ *****'}',
               style: TextStyle(
                   color: widget.textColor,
                   fontSize: 32.0,
-                  fontWeight: FontWeight.bold)),
+                  fontWeight: FontWeight.w900)),
           SizedBox(
             width: 16.0,
           ),

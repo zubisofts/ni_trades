@@ -11,7 +11,14 @@ class AuthInitial extends AuthState {}
 
 class SignUpLoadingState extends AuthState {}
 
-class UserSignedUpState extends AuthState {}
+class UserSignedUpState extends AuthState {
+  final NIUser.User user;
+
+  UserSignedUpState(this.user);
+
+  @override
+  List<Object> get props => [user];
+}
 
 class SignupUserErrorState extends AuthState {
   final String error;
@@ -44,7 +51,7 @@ class LoginUserErrorState extends AuthState {
 }
 
 class UserLoggedInState extends AuthState {
-  final User user;
+  final NIUser.User user;
 
   UserLoggedInState(this.user);
 

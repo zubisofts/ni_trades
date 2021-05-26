@@ -90,14 +90,13 @@ class AppUtils {
     return response.status ? ref : null;
   }
 
-  static Stream<String> getInvestmentCountDown(int timestamp, int months) {
-    return Stream.periodic(Duration(seconds: 1), (data) {
+  static Stream<String> getInvestmentCountDown(int startDate, int months) {
+    return Stream.periodic(Duration(seconds: 1), (__) {
       var advanceDaysInMillis = (31 * months) * 8.64e+7;
-      var advanceDate =
-          DateTime.now().millisecondsSinceEpoch + advanceDaysInMillis;
-      var difference =
-          ((advanceDate - DateTime.now().millisecondsSinceEpoch) / 8.64e+7)
-              .round();
+      var advanceDate = startDate + advanceDaysInMillis;
+      var d = advanceDate - (DateTime.now().millisecondsSinceEpoch);
+
+      var difference = (d / 8.64e+7).round();
       return '$difference';
     });
   }

@@ -31,7 +31,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         Container(
           padding: EdgeInsets.symmetric(horizontal: 32.0, vertical: 8.0),
           decoration: BoxDecoration(
-              color: Theme.of(context).cardTheme.color,
+              color: Theme.of(context).cardColor,
               borderRadius: BorderRadiusDirectional.circular(16.0)),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,9 +97,11 @@ class ActionsRow extends StatelessWidget {
             child: MaterialButton(
                 // height: MediaQuery.of(context).size.width * 0.6,
                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                color: Colors.white.withOpacity(0.4),
+                color: Theme.of(context).cardColor,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+                    side: BorderSide(
+                        width: 1, color: Theme.of(context).iconTheme.color!),
+                    borderRadius: BorderRadius.circular(4.0)),
                 elevation: 1,
                 child: Container(
                   width: MediaQuery.of(context).size.width,
@@ -108,7 +110,10 @@ class ActionsRow extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      Icon(Icons.add),
+                      Icon(
+                        Icons.add,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                       SizedBox(width: 16),
                       Text(
                         "Fund",
@@ -134,10 +139,12 @@ class ActionsRow extends StatelessWidget {
         Expanded(
             child: MaterialButton(
                 // height: MediaQuery.of(context).size.width * 0.6,
-                color: Colors.white.withOpacity(0.4),
                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                color: Theme.of(context).cardColor,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+                    side: BorderSide(
+                        width: 1, color: Theme.of(context).iconTheme.color!),
+                    borderRadius: BorderRadius.circular(4.0)),
                 elevation: 1,
                 child: Container(
                   width: MediaQuery.of(context).size.width,
@@ -146,7 +153,10 @@ class ActionsRow extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      Icon(Icons.wallet_giftcard_outlined),
+                      Icon(
+                        Icons.wallet_giftcard_outlined,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                       SizedBox(width: 16),
                       Text(
                         "Withdraw",
@@ -226,15 +236,11 @@ class _TransactionsWidgetState extends State<TransactionsWidget> {
         if (state is TransactionsLoadingState) {
           return Expanded(
             child: Center(
-              child: Platform.isIOS
-                  ? SpinKitCircle(
-                      size: 32,
-                      color: Colors.blueGrey,
-                    )
-                  : SpinKitChasingDots(
-                      color: Colors.blue,
-                      size: 32,
-                    ),
+              child: SpinKitDualRing(
+                lineWidth: 2,
+                color: Theme.of(context).colorScheme.secondary,
+                size: 32,
+              ),
             ),
           );
         }

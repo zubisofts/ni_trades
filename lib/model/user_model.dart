@@ -8,42 +8,19 @@ class User extends Equatable {
   final String lastName;
   final String email;
   final String phoneNumber;
+  final String photo;
   final int createdAt;
   final int updatedAt;
-
   User({
     required this.id,
     required this.firstName,
     required this.lastName,
     required this.email,
     required this.phoneNumber,
+    required this.photo,
     required this.createdAt,
     required this.updatedAt,
   });
-
-  @override
-  List<Object> get props {
-    return [
-      id,
-      firstName,
-      lastName,
-      email,
-      phoneNumber,
-      createdAt,
-      updatedAt,
-    ];
-  }
-
-  factory User.empty(){
-    return User(id: "",
-      firstName: "",
-      lastName: "",
-      email: "",
-      phoneNumber: "",
-      createdAt: 0,
-      updatedAt: 0,
-    );
-  }
 
   User copyWith({
     String? id,
@@ -51,6 +28,7 @@ class User extends Equatable {
     String? lastName,
     String? email,
     String? phoneNumber,
+    String? photo,
     int? createdAt,
     int? updatedAt,
   }) {
@@ -60,6 +38,7 @@ class User extends Equatable {
       lastName: lastName ?? this.lastName,
       email: email ?? this.email,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      photo: photo ?? this.photo,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -72,6 +51,7 @@ class User extends Equatable {
       'lastName': lastName,
       'email': email,
       'phoneNumber': phoneNumber,
+      'photo': photo,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };
@@ -84,6 +64,9 @@ class User extends Equatable {
       lastName: map['lastName'],
       email: map['email'],
       phoneNumber: map['phoneNumber'],
+      photo: map['photo'].toString().isEmpty
+          ? "https://cdn.fastly.picmonkey.com/contentful/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=800&q=70"
+          : map['photo'],
       createdAt: map['createdAt'],
       updatedAt: map['updatedAt'],
     );
@@ -95,4 +78,18 @@ class User extends Equatable {
 
   @override
   bool get stringify => true;
+
+  @override
+  List<Object> get props {
+    return [
+      id,
+      firstName,
+      lastName,
+      email,
+      phoneNumber,
+      photo,
+      createdAt,
+      updatedAt,
+    ];
+  }
 }

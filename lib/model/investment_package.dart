@@ -6,38 +6,45 @@ class InvestmentPackage with EquatableMixin {
   String id;
   String title;
   String description;
-  String categoryId;
+  String category;
   int durationInMonths;
   int returns;
   String imageCoverUrl;
+  bool isOpen;
+  int maxCount;
   InvestmentPackage({
     required this.id,
     required this.title,
     required this.description,
-    required this.categoryId,
+    required this.category,
     required this.durationInMonths,
     required this.returns,
     required this.imageCoverUrl,
+    required this.isOpen,
+    required this.maxCount,
   });
-  
 
   InvestmentPackage copyWith({
     String? id,
     String? title,
     String? description,
-    String? categoryId,
+    String? category,
     int? durationInMonths,
     int? returns,
     String? imageCoverUrl,
+    bool? isOpen,
+    int? maxCount,
   }) {
     return InvestmentPackage(
       id: id ?? this.id,
       title: title ?? this.title,
       description: description ?? this.description,
-      categoryId: categoryId ?? this.categoryId,
+      category: category ?? this.category,
       durationInMonths: durationInMonths ?? this.durationInMonths,
       returns: returns ?? this.returns,
       imageCoverUrl: imageCoverUrl ?? this.imageCoverUrl,
+      isOpen: isOpen ?? this.isOpen,
+      maxCount: maxCount ?? this.maxCount,
     );
   }
 
@@ -46,10 +53,12 @@ class InvestmentPackage with EquatableMixin {
       'id': id,
       'title': title,
       'description': description,
-      'categoryId': categoryId,
+      'category': category,
       'durationInMonths': durationInMonths,
       'returns': returns,
       'imageCoverUrl': imageCoverUrl,
+      'isOpen': isOpen,
+      'maxCount': maxCount,
     };
   }
 
@@ -58,16 +67,19 @@ class InvestmentPackage with EquatableMixin {
       id: map['id'],
       title: map['title'],
       description: map['description'],
-      categoryId: map['categoryId'],
+      category: map['category'],
       durationInMonths: map['durationInMonths'],
       returns: map['returns'],
       imageCoverUrl: map['imageCoverUrl'],
+      isOpen: map['isOpen'],
+      maxCount: map['maxCount'],
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory InvestmentPackage.fromJson(String source) => InvestmentPackage.fromMap(json.decode(source));
+  factory InvestmentPackage.fromJson(String source) =>
+      InvestmentPackage.fromMap(json.decode(source));
 
   @override
   bool get stringify => true;
@@ -78,10 +90,12 @@ class InvestmentPackage with EquatableMixin {
       id,
       title,
       description,
-      categoryId,
+      category,
       durationInMonths,
       returns,
       imageCoverUrl,
+      isOpen,
+      maxCount,
     ];
   }
 }

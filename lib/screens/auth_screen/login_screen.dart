@@ -33,6 +33,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+        Theme.of(context).appBarTheme.systemOverlayStyle!);
     return Scaffold(
       body: Stack(
         children: [
@@ -90,13 +92,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Theme.of(context).colorScheme.secondary,
                                 cursorHeight: 24,
                                 style: TextStyle(
-                                    fontSize: 18.0,
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onPrimary),
                                 decoration: Constants.inputDecoration(context)
                                     .copyWith(
-                                        labelText: 'Email Address',
+                                        hintText: 'Email Address',
                                         prefixIcon: Icon(Icons.email,
                                             color: Colors.blueGrey)),
                               ),
@@ -110,15 +111,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   MinLengthValidator(5,
                                       errorText:
                                           'Password must be at least 5 digits long'),
-                                  PatternValidator(r'(?=.*?[#?!@$%^&*-])',
-                                      errorText:
-                                          'Passwords must have at least one special character')
                                 ]),
                                 onChanged: (v) {
                                   _validate();
                                 },
                                 style: TextStyle(
-                                    fontSize: 18.0,
                                     color: Theme.of(context)
                                         .colorScheme
                                         .onPrimary),
@@ -129,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 cursorHeight: 24.0,
                                 decoration:
                                     Constants.inputDecoration(context).copyWith(
-                                  labelText: 'Password',
+                                  hintText: 'Password',
                                   prefixIcon: Icon(
                                     Icons.lock,
                                     color: Colors.blueGrey,
@@ -225,6 +222,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       children: [
                                         state is LoginUserLoadingState
                                             ? Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
                                                 children: [
                                                   SpinKitDualRing(
                                                       size: 24,

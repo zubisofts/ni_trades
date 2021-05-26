@@ -1,10 +1,15 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
+import 'package:ni_trades/blocs/data/data_bloc.dart';
 import 'package:ni_trades/model/user_model.dart';
+import 'package:ni_trades/screens/homescreen/homescreen.dart';
 import 'package:ni_trades/util/constants.dart';
+import 'package:page_transition/page_transition.dart';
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -31,6 +36,8 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(
+        Theme.of(context).appBarTheme.systemOverlayStyle!);
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
@@ -48,13 +55,17 @@ class _SignupScreenState extends State<SignupScreen> {
               //     semanticsLabel: 'A red up arrow'),
               SizedBox(height: 16.0),
               Text("Let's get started",
-                  style:
-                      TextStyle(fontSize: 32.0, fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.bold)),
               SizedBox(
                 height: 8,
               ),
               Text('Create an account to NI Trade to get started',
-                  style: TextStyle(fontSize: 14.0, color: Colors.black45)),
+                  style: TextStyle(
+                      fontSize: 14.0,
+                      color: Theme.of(context).colorScheme.onPrimary)),
               SizedBox(height: 32.0),
               Form(
                 child: Shortcuts(
@@ -84,10 +95,11 @@ class _SignupScreenState extends State<SignupScreen> {
                             cursorColor:
                                 Theme.of(context).colorScheme.secondary,
                             cursorHeight: 24,
-                            style: TextStyle(fontSize: 18.0),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary),
                             decoration: Constants.inputDecoration(context)
                                 .copyWith(
-                                    labelText: 'First Name',
+                                    hintText: 'First Name',
                                     prefixIcon: Icon(Icons.person,
                                         color: Colors.blueGrey)),
                           ),
@@ -103,10 +115,11 @@ class _SignupScreenState extends State<SignupScreen> {
                             cursorColor:
                                 Theme.of(context).colorScheme.secondary,
                             cursorHeight: 24,
-                            style: TextStyle(fontSize: 18.0),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary),
                             decoration: Constants.inputDecoration(context)
                                 .copyWith(
-                                    labelText: 'Last Name',
+                                    hintText: 'Last Name',
                                     prefixIcon: Icon(Icons.person,
                                         color: Colors.blueGrey)),
                           ),
@@ -121,10 +134,11 @@ class _SignupScreenState extends State<SignupScreen> {
                             cursorColor:
                                 Theme.of(context).colorScheme.secondary,
                             cursorHeight: 24,
-                            style: TextStyle(fontSize: 18.0),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary),
                             decoration: Constants.inputDecoration(context)
                                 .copyWith(
-                                    labelText: 'Email Address',
+                                    hintText: 'Email Address',
                                     prefixIcon: Icon(Icons.email,
                                         color: Colors.blueGrey)),
                           ),
@@ -142,10 +156,11 @@ class _SignupScreenState extends State<SignupScreen> {
                             cursorColor:
                                 Theme.of(context).colorScheme.secondary,
                             cursorHeight: 24,
-                            style: TextStyle(fontSize: 18.0),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary),
                             decoration: Constants.inputDecoration(context)
                                 .copyWith(
-                                    labelText: 'Phone Number',
+                                    hintText: 'Phone Number',
                                     prefixIcon: Icon(Icons.phone,
                                         color: Colors.blueGrey)),
                           ),
@@ -157,14 +172,12 @@ class _SignupScreenState extends State<SignupScreen> {
                               MinLengthValidator(5,
                                   errorText:
                                       'Password must be at least 5 digits long'),
-                              PatternValidator(r'(?=.*?[#?!@$%^&*-])',
-                                  errorText:
-                                      'Passwords must have at least one special character')
                             ]),
                             onChanged: (v) {
                               // _validate();
                             },
-                            style: TextStyle(fontSize: 18.0),
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary),
                             controller: passwordTextController,
                             cursorColor:
                                 Theme.of(context).colorScheme.secondary,
@@ -172,7 +185,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             cursorHeight: 24.0,
                             decoration: Constants.inputDecoration(context)
                                 .copyWith(
-                                    labelText: 'Password',
+                                    hintText: 'Password',
                                     prefixIcon: Icon(Icons.lock,
                                         color: Colors.blueGrey)),
                           ),
@@ -187,9 +200,35 @@ class _SignupScreenState extends State<SignupScreen> {
                               }
 
                               if (state is UserSignedUpState) {
-                                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    content: Text(
-                                        'Your account has been created successfully')));
+                                AwesomeDialog(
+                                        context: context,
+                                        dialogType: DialogType.SUCCES,
+                                        title: 'Congratualtions',
+                                        body: Text(
+                                          'Account created successfully!',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary,
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        dismissOnBackKeyPress: false,
+                                        dismissOnTouchOutside: false,
+                                        btnOkText: 'Got It!',
+                                        btnOkColor: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                        btnOkOnPress: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        padding: EdgeInsets.all(16.0))
+                                    .show();
+
+                                // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                //     content: Text(
+                                //         'Your account has been created successfully')));
+
                               }
                             },
                             builder: (context, state) {
@@ -207,29 +246,57 @@ class _SignupScreenState extends State<SignupScreen> {
                                   color:
                                       Theme.of(context).colorScheme.secondary,
                                   // Theme.of(context).colorScheme.secondary,
-                                  onPressed: () {
-                                    context.read<AuthBloc>().add(
-                                          SignUpEvent(
-                                              user: User(
-                                                  id: "",
-                                                  firstName:
-                                                      fnameTextController.text,
-                                                  lastName:
-                                                      lnameTextController.text,
-                                                  email:
-                                                      emailTextController.text,
-                                                  phoneNumber:
-                                                      phoneTextController.text,
-                                                  createdAt: DateTime.now()
-                                                      .millisecondsSinceEpoch,
-                                                  updatedAt: DateTime.now()
-                                                      .millisecondsSinceEpoch),
-                                              password:
-                                                  passwordTextController.text),
-                                        );
-                                  },
-                                  child: Text('Create Account',
-                                      style: TextStyle(color: Colors.white)));
+                                  onPressed: state is SignUpLoadingState
+                                      ? null
+                                      : () {
+                                          context.read<AuthBloc>().add(
+                                                SignUpEvent(
+                                                    user: User(
+                                                        id: "",
+                                                        firstName:
+                                                            fnameTextController
+                                                                .text,
+                                                        lastName:
+                                                            lnameTextController
+                                                                .text,
+                                                        email:
+                                                            emailTextController
+                                                                .text,
+                                                        phoneNumber:
+                                                            phoneTextController
+                                                                .text,
+                                                        photo: '',
+                                                        createdAt: DateTime
+                                                                .now()
+                                                            .millisecondsSinceEpoch,
+                                                        updatedAt: DateTime
+                                                                .now()
+                                                            .millisecondsSinceEpoch),
+                                                    password:
+                                                        passwordTextController
+                                                            .text),
+                                              );
+                                        },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      (state is SignUpLoadingState)
+                                          ? SpinKitDualRing(
+                                              size: 24,
+                                              lineWidth: 2,
+                                              color: Colors.white)
+                                          : SizedBox.shrink(),
+                                      SizedBox(
+                                        width: 16.0,
+                                      ),
+                                      Text(
+                                          (state is SignUpLoadingState)
+                                              ? 'Creating Account'
+                                              : 'Create Account',
+                                          style:
+                                              TextStyle(color: Colors.white)),
+                                    ],
+                                  ));
                             },
                           ),
                           SizedBox(height: 16.0),
