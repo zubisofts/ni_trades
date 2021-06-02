@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:ni_trades/model/api_response.dart';
 
 import 'package:ni_trades/model/investment.dart';
 import 'package:ni_trades/model/investment_package.dart';
+import 'package:ni_trades/model/time_api.dart';
 import 'package:ni_trades/repository/data_repo.dart';
+import 'package:ni_trades/repository/payment_repository.dart';
 import 'package:ni_trades/util/my_utils.dart';
 
 class InvestmentDashboardScreen extends StatefulWidget {
@@ -131,21 +134,44 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
                   stream: fetchPackageInfo,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
-                      return StreamBuilder<String>(
-                          stream: AppUtils.getInvestmentCountDown(
-                              widget.investment.startDate,
-                              snapshot.data!.durationInMonths),
-                          builder: (context, snapshot) {
-                            if (snapshot.hasData) {
-                              return Text(
-                                  'Your investement will be due in ${snapshot.data!} days',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 16.0,
-                                  ));
-                            }
-                            return Text('');
-                          });
+                      return FutureBuilder<ApiResponse>(
+                        future: PaymentRepository().getCurrentTime,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            TimeApi timeApi = snapshot.data!.data;
+                            int time = DateTime.parse(timeApi.currentDateTime)
+                                .millisecondsSinceEpoch;
+                            // print(DateTime.parse(timeApi.currentDateTime));
+                            return StreamBuilder<InvestmentPackage>(
+                              stream: DataService().fetchPackageDetails(
+                                  widget.investment.packageId),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  return StreamBuilder<String>(
+                                      stream: AppUtils.getInvestmentCountDown(
+                                          time,
+                                          widget.investment.startDate,
+                                          snapshot.data!.durationInMonths),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          return Text(
+                                              'Investement will be due in ${snapshot.data!} days',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16.0,
+                                              ));
+                                        }
+                                        return Text('');
+                                      });
+                                }
+
+                                return SizedBox.shrink();
+                              },
+                            );
+                          }
+                          return Text('Calculating duration...');
+                        },
+                      );
                     }
 
                     return SizedBox.shrink();
@@ -165,6 +191,7 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
               Expanded(
                 child: Container(
                   padding: EdgeInsets.all(16.0),
+                  height: 150,
                   decoration: BoxDecoration(
                       color: Theme.of(context).cardTheme.color,
                       borderRadius: BorderRadius.circular(8.0)),
@@ -174,7 +201,7 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
                       Text('Start Date',
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onPrimary,
-                            fontSize: 16.0,
+                            fontSize: 14.0,
                           )),
                       SizedBox(
                         height: 8.0,
@@ -183,7 +210,7 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
                           '${AppUtils.getDateFromTimestamp(widget.investment.startDate)}',
                           style: TextStyle(
                               color: Theme.of(context).colorScheme.onPrimary,
-                              fontSize: 16.0,
+                              fontSize: 15.0,
                               fontWeight: FontWeight.bold))
                     ],
                   ),
@@ -195,6 +222,7 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
               Expanded(
                 child: Container(
                   padding: EdgeInsets.all(16.0),
+                  height: 150,
                   decoration: BoxDecoration(
                       color: Theme.of(context).cardTheme.color,
                       borderRadius: BorderRadius.circular(8.0)),
@@ -204,7 +232,7 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
                       Text('Due Date',
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onPrimary,
-                            fontSize: 16.0,
+                            fontSize: 14.0,
                           )),
                       SizedBox(
                         height: 8.0,
@@ -219,7 +247,7 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
                                       color: Theme.of(context)
                                           .colorScheme
                                           .onPrimary,
-                                      fontSize: 16.0,
+                                      fontSize: 15.0,
                                       fontWeight: FontWeight.bold));
                             }
                             return Text('...');
@@ -236,7 +264,7 @@ class _InvestmentBalanceWidgetState extends State<InvestmentBalanceWidget> {
           margin: EdgeInsets.all(16.0),
           padding: const EdgeInsets.all(16.0),
           child: Row(
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               MaterialButton(
                 onPressed: widget.investment.isDue ? () {} : null,

@@ -1,6 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:ni_trades/model/transaction.dart';
+import 'package:ni_trades/screens/transactions/transactions_details_screen.dart';
 
 class TransactionItemWidget extends StatelessWidget {
   final NiTransacton transaction;
@@ -12,14 +14,22 @@ class TransactionItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      // margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
-      decoration: BoxDecoration(color: Theme.of(context).cardTheme.color),
+      margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
+      decoration: BoxDecoration(
+          color: Theme.of(context).cardTheme.color!.withOpacity(0.1)),
       child: ListTile(
-        onTap: () {},
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) =>
+                TransactionsDetailsScreen(transaction: transaction),
+          ));
+        },
         contentPadding: EdgeInsets.all(8.0),
-        leading: CircleAvatar(
-          radius: 24.0,
-          backgroundImage: AssetImage('assets/images/wallet.png'),
+        leading: SvgPicture.asset(
+          transaction.type == 'Invest'
+              ? 'assets/icons/investments.svg'
+              : 'assets/icons/wallet.svg',
+          width: 45,
         ),
         title: Text(transaction.title,
             style: TextStyle(

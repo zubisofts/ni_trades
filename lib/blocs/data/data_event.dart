@@ -72,13 +72,14 @@ class RecentInvestmentsFetchedEvent extends DataEvent {
 }
 
 class FundWalletEvent extends DataEvent {
-  final String userId;
   final dynamic amount;
+  final BuildContext context;
+  final PaymentCard paymentCard;
 
-  FundWalletEvent({required this.userId, required this.amount});
+  FundWalletEvent(this.context, this.paymentCard, {required this.amount});
 
   @override
-  List<Object> get props => [userId, amount];
+  List<Object> get props => [amount, paymentCard, context];
 }
 
 // Categories event
@@ -86,3 +87,32 @@ class FetchCategoriesEvent extends DataEvent {}
 
 // Transactions Event
 class LoadTransactionsEvent extends DataEvent {}
+
+class InvestViaWalletEvent extends DataEvent {
+  final Investment investment;
+
+  InvestViaWalletEvent(this.investment);
+
+  @override
+  List<Object> get props => [investment];
+}
+
+class VerifyAccountDetialsEvent extends DataEvent {
+  final String accountNumber;
+  final String bankCode;
+
+  VerifyAccountDetialsEvent(this.accountNumber, this.bankCode);
+
+  @override
+  List<Object> get props => [accountNumber, bankCode];
+}
+
+class UpdateUserPhotoEvent extends DataEvent {
+  final NIUser.User user;
+  final File photo;
+
+  UpdateUserPhotoEvent(this.user, this.photo);
+
+  @override
+  List<Object> get props => [user, photo];
+}

@@ -4,8 +4,8 @@
   <uses-permission android:name="android.permission.INTERNET"/>
 
    <application
-        android:label="ni_trades"
-        android:icon="@mipmap/ic_launcher">
+        android:label="NI Trades"
+        android:icon="@drawable/ni_trade_logo">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

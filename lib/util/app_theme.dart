@@ -10,10 +10,11 @@ class AppTheme {
   static final ThemeData lightTheme = ThemeData(
     scaffoldBackgroundColor: Colors.white,
     fontFamily: "Poppins-Medium",
+    cardColor: Color(0xFF393939).withOpacity(0.1),
     appBarTheme: AppBarTheme(
       color: Colors.white,
       brightness: Brightness.light,
-      systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
+      systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
         statusBarColor: Colors.white,
       ),
       textTheme: TextTheme(
@@ -33,7 +34,7 @@ class AppTheme {
       onSecondary: Colors.blueGrey,
     ),
     cardTheme: CardTheme(
-      color: Colors.white,
+      color: Color(0xFF393939).withOpacity(0.1),
     ),
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
@@ -63,7 +64,7 @@ class AppTheme {
     fontFamily: "Poppins-Medium",
     appBarTheme: AppBarTheme(
       color: Color(0xFF121212),
-      brightness: Brightness.light,
+      brightness: Brightness.dark,
       systemOverlayStyle: SystemUiOverlayStyle.light.copyWith(
         statusBarColor: Color(0xFF121212),
       ),
@@ -104,9 +105,14 @@ class AppTheme {
   static Future<bool> get themeValue async {
     try {
       var preferences = await SharedPreferences.getInstance();
-      bool value = preferences.getBool(Constants.THEME_PREF_KEY)!;
-      print('Theme value:$value');
-      return value;
+      var object = preferences.get(Constants.FIRST_TIME_USER_PREF_KEY);
+      // if (object == null) {
+      //   return false;
+      // } else {
+        bool value = preferences.getBool(Constants.THEME_PREF_KEY)!;
+        print('Theme value:$value');
+        return value;
+      // }
     } catch (e) {
       print('Fetch theme error:${e.toString()}');
       return false;
@@ -128,8 +134,13 @@ class AppTheme {
   static Future<bool> get isFirstTimeUser async {
     try {
       var preferences = await SharedPreferences.getInstance();
-      bool value = preferences.getBool(Constants.FIRST_TIME_USER_PREF_KEY)!;
-      return value;
+      var object = preferences.get(Constants.FIRST_TIME_USER_PREF_KEY);
+      if (object == null) {
+        return true;
+      } else {
+        bool value = preferences.getBool(Constants.FIRST_TIME_USER_PREF_KEY)!;
+        return value;
+      }
     } catch (e) {
       print('get first time user error:${e.toString()}');
       return false;

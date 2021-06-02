@@ -1,16 +1,23 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_paystack/flutter_paystack.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:form_field_validator/form_field_validator.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:ni_trades/blocs/app/app_bloc.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/blocs/data/data_bloc.dart';
+import 'package:ni_trades/model/investment.dart';
+import 'package:ni_trades/repository/data_repo.dart';
 import 'package:ni_trades/screens/homescreen/widgets/balance_widget.dart';
 import 'package:ni_trades/screens/homescreen/widgets/current_investmentProgress_widget.dart';
 import 'package:ni_trades/screens/homescreen/widgets/recent_investments_widget.dart';
 import 'package:ni_trades/screens/investment/investment_selection_screen.dart';
+import 'package:ni_trades/screens/payment/widgets/checkout_widget.dart';
 import 'package:ni_trades/screens/profile/user_profile_screen.dart';
 import 'package:ni_trades/util/constants.dart';
 import 'package:ni_trades/util/my_utils.dart';
@@ -81,7 +88,8 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
                                               children: [
-                                                Text('Good ${AppUtils.greet}',
+                                                Text(
+                                                    'Good ${AppUtils.greet(DateTime.now())}',
                                                     style: TextStyle(
                                                         color: Colors.grey,
                                                         fontSize: 18,
@@ -308,6 +316,8 @@ class QuickActionsWidget extends StatefulWidget {
 class _QuickActionsWidgetState extends State<QuickActionsWidget> {
   late PaystackPlugin paystackPlugin;
 
+  var amountTextController = TextEditingController();
+
   @override
   void initState() {
     initPayStack();
@@ -329,7 +339,26 @@ class _QuickActionsWidgetState extends State<QuickActionsWidget> {
           Row(
             children: [
               Expanded(
-                  child: MaterialButton(
+                  child: BlocConsumer<DataBloc, DataState>(
+                listenWhen: (previous, current) =>
+                    current is WalletFundSuccessfulState ||
+                    current is WalletFundFailureState ||
+                    current is WalletFundLoadingState,
+                listener: (context, state) {
+                  if (state is WalletFundSuccessfulState) {
+                    AppUtils.showFundSuccessDialog(context);
+                  }
+
+                  if (State is WalletFundFailureState) {
+                    AppUtils.showFundFailureDialog(context);
+                  }
+
+                  if (state is WalletFundLoadingState) {
+                    AppUtils.showFundLoadingDialog(context);
+                  }
+                },
+                builder: (context, state) {
+                  return MaterialButton(
                       // height: MediaQuery.of(context).size.width * 0.6,
                       padding: EdgeInsets.symmetric(
                           vertical: 16.0, horizontal: 16.0),
@@ -359,8 +388,102 @@ class _QuickActionsWidgetState extends State<QuickActionsWidget> {
                         ],
                       ),
                       onPressed: () async {
-                        fundWallet(paystackPlugin, 1000);
-                      })),
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            backgroundColor:
+                                Theme.of(context).scaffoldBackgroundColor,
+                            title: Text('Wallet Fund Amount'),
+                            content: Form(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'How much do you want to fund (\u20A6)',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary),
+                                  ),
+                                  SizedBox(height: 8.0),
+                                  TextFormField(
+                                    controller: amountTextController,
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary),
+                                    decoration: InputDecoration(
+                                        prefixIcon: Icon(
+                                          Icons.payment,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
+                                        hintText: 'Enter amount',
+                                        hintStyle: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary),
+                                        fillColor: Theme.of(context).cardColor,
+                                        filled: true,
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                width: 1,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0))),
+                                    validator: MultiValidator([
+                                      RequiredValidator(
+                                          errorText: 'Amount is required'),
+                                      MinLengthValidator(3,
+                                          errorText:
+                                              'Fund amount must start from \2UA6100'),
+                                    ]),
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                    ],
+                                    keyboardType: TextInputType.number,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              MaterialButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  showMaterialModalBottomSheet(
+                                    context: context,
+                                    builder: (context) => CheckoutWidget(
+                                        paymentType: PaymentType.FUND,
+                                        fundAmount: int.parse(
+                                            amountTextController.text)),
+                                  );
+                                },
+                                disabledColor: Theme.of(context)
+                                    .colorScheme
+                                    .secondary
+                                    .withOpacity(0.4),
+                                minWidth: MediaQuery.of(context).size.width,
+                                padding: EdgeInsets.all(16.0),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0)),
+                                color: Theme.of(context).colorScheme.secondary,
+                                child: Text(
+                                  'Continue',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                },
+              )),
               SizedBox(
                 width: 16.0,
               ),
@@ -405,14 +528,5 @@ class _QuickActionsWidgetState extends State<QuickActionsWidget> {
         ],
       ),
     );
-  }
-
-  void fundWallet(PaystackPlugin paystackPlugin, dynamic amount) async {
-    String? refId = await AppUtils.makePayment(context, paystackPlugin, amount);
-    if (refId != null) {
-      context
-          .read<DataBloc>()
-          .add(FundWalletEvent(amount: amount, userId: AuthBloc.uid!));
-    }
   }
 }

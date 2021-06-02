@@ -1,8 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack/flutter_paystack.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
+import 'package:ni_trades/repository/payment_repository.dart';
 import 'package:uuid/uuid.dart';
 
 class AppUtils {
@@ -90,25 +91,73 @@ class AppUtils {
     return response.status ? ref : null;
   }
 
-  static Stream<String> getInvestmentCountDown(int startDate, int months) {
+  static Stream<String> getInvestmentCountDown(
+      int currentTime, int startDate, int months) {
     return Stream.periodic(Duration(seconds: 1), (__) {
-      var advanceDaysInMillis = (31 * months) * 8.64e+7;
-      var advanceDate = startDate + advanceDaysInMillis;
-      var d = advanceDate - (DateTime.now().millisecondsSinceEpoch);
+      var difference = ((currentTime - startDate) / 8.64e+7).round();
 
-      var difference = (d / 8.64e+7).round();
-      return '$difference';
+      var totalDays = (months * 31);
+
+      var p = totalDays - difference;
+      return '$p';
     });
   }
 
-  static getInvestmentDueDate(int startDate, int months) {
-    var advanceDaysInMillis = ((31 * months) * 8.64e+7).round();
-    var date = (startDate + advanceDaysInMillis).round();
-    return getDateFromTimestamp(date);
+  static int getFutureInvestmentCountDown(int startDate, int months) {
+    var advanceDaysInMillis = (31 * months) * 8.64e+7;
+    var advanceDate = startDate + advanceDaysInMillis;
+    var d = advanceDate - (DateTime.now().millisecondsSinceEpoch);
+
+    var difference = (d / 8.64e+7).round();
+    return difference;
   }
 
-  static String get greet {
-    var hour = DateTime.now().hour;
+  static getInvestmentDueDate(int startDate, int months) {
+    // var advanceDaysInMillis = ((months) * 2.628e+9);
+    // var date = (startDate + advanceDaysInMillis).round();
+    var d = DateTime.fromMillisecondsSinceEpoch(startDate)
+        .add(Duration(days: months * 31))
+        .millisecondsSinceEpoch;
+    return getDateFromTimestamp(d);
+  }
+
+  static Future<double> getInvestmentProgress(int startDate, int months) async {
+    try {
+      var res = await PaymentRepository().getCurrentTime;
+
+      if (res.error) {
+        return 0.0;
+      }
+
+      var time = DateTime.parse(res.data.currentDateTime);
+
+      var difference =
+          ((time.millisecondsSinceEpoch - startDate) / 8.64e+7).round();
+
+      var totalDays = (months * 31);
+
+      var p = difference / totalDays;
+      // print('Total:$difference/$totalDays');
+      return p;
+    } catch (e) {
+      return 0.0;
+    }
+  }
+
+// Using this method to simulate progresss
+  // static double getInvestmentProgress(int startDate, int months) {
+  //   var difference =
+  //       ((DateTime.now().millisecondsSinceEpoch - startDate) / 8.64e+7).round();
+
+  //   var totalDays = (months * 31);
+
+  //   var p = difference / totalDays;
+  //   // print('Total:$difference/$totalDays');
+  //   return p;
+  // }
+
+  static String greet(DateTime time) {
+    var hour = time.hour;
     if (hour < 12) {
       return 'Morning';
     }
@@ -116,5 +165,69 @@ class AppUtils {
       return 'Afternoon';
     }
     return 'Evening';
+  }
+
+  static void showFundSuccessDialog(BuildContext context) {
+    Navigator.of(context)..pop()..pop();
+    AwesomeDialog(
+        context: context,
+        title: 'Success',
+        dialogType: DialogType.SUCCES,
+        animType: AnimType.SCALE,
+        headerAnimationLoop: false,
+        dismissOnTouchOutside: false,
+        dismissOnBackKeyPress: false,
+        dialogBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        btnOk: TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            ;
+          },
+          style: TextButton.styleFrom(
+              padding: EdgeInsets.all(16.0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0)),
+              backgroundColor: Theme.of(context).colorScheme.secondary),
+          child: Text('Dismiss'),
+        )).show();
+  }
+
+  static void showFundFailureDialog(BuildContext context) {
+    Navigator.of(context).pop();
+    AwesomeDialog(
+        context: context,
+        title: 'Request was not completed',
+        dialogType: DialogType.ERROR,
+        animType: AnimType.SCALE,
+        headerAnimationLoop: false,
+        dismissOnTouchOutside: false,
+        dismissOnBackKeyPress: false,
+        dialogBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        btnOk: TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            ;
+          },
+          style: TextButton.styleFrom(
+              padding: EdgeInsets.all(16.0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0)),
+              backgroundColor: Theme.of(context).colorScheme.secondary),
+          child: Text('Dismiss'),
+        )).show();
+  }
+
+  static void showFundLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierColor: Theme.of(context).cardColor.withOpacity(0.3),
+      builder: (context) => Center(
+        child: SpinKitDualRing(
+          color: Theme.of(context).colorScheme.secondary,
+          lineWidth: 2,
+          size: 32,
+        ),
+      ),
+    );
   }
 }

@@ -1,15 +1,25 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:form_field_validator/form_field_validator.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/blocs/data/data_bloc.dart';
 import 'package:ni_trades/model/transaction.dart';
+import 'package:ni_trades/repository/payment_repository.dart';
 import 'package:ni_trades/screens/homescreen/dashboard.dart';
 import 'package:ni_trades/screens/homescreen/widgets/balance_widget.dart';
 import 'package:ni_trades/screens/investment/investment_selection_screen.dart';
+import 'package:ni_trades/screens/payment/widgets/checkout_widget.dart';
 import 'package:ni_trades/screens/transactions/widgets/transaction_item_widget.dart';
+import 'package:ni_trades/screens/transactions/widgets/transactions_list_widget.dart';
+import 'package:ni_trades/screens/withdrawal/withdrawal_screen.dart';
+import 'package:ni_trades/util/constants.dart';
+import 'package:ni_trades/util/my_utils.dart';
 
 class PaymentScreen extends StatefulWidget {
   @override
@@ -66,35 +76,56 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ],
           ),
         ),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Text(
-                  'Wallet Transactions',
-                  style: TextStyle(
-                      fontSize: 18,
-                      color: Theme.of(context).colorScheme.onPrimary),
-                ),
-              ),
-              TransactionsWidget()
-            ],
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Text(
+            'Wallet Transactions',
+            style: TextStyle(
+                fontSize: 18, color: Theme.of(context).colorScheme.onPrimary),
           ),
-        )
+        ),
+        Expanded(
+          child: Container(
+            // padding: EdgeInsets.only(bottom: 80),
+            child: TransactionsWidget(),
+          ),
+        ),
+        // SizedBox(
+        //   height: 70,
+        // )
       ],
     );
   }
 }
 
 class ActionsRow extends StatelessWidget {
+  final amountTextController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Expanded(
-            child: MaterialButton(
+            child: BlocConsumer<DataBloc, DataState>(
+          listenWhen: (previous, current) =>
+              current is WalletFundSuccessfulState ||
+              current is WalletFundFailureState ||
+              current is WalletFundLoadingState,
+          listener: (context, state) {
+            if (state is WalletFundSuccessfulState) {
+              AppUtils.showFundSuccessDialog(context);
+            }
+
+            if (State is WalletFundFailureState) {
+              AppUtils.showFundFailureDialog(context);
+            }
+
+            if (state is WalletFundLoadingState) {
+              AppUtils.showFundLoadingDialog(context);
+            }
+          },
+          builder: (context, state) {
+            return MaterialButton(
                 // height: MediaQuery.of(context).size.width * 0.6,
                 padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 color: Theme.of(context).cardColor,
@@ -123,16 +154,107 @@ class ActionsRow extends StatelessWidget {
                                 .onPrimary
                                 .withOpacity(0.7),
                             // fontWeight: FontWeight.bold,
-                            fontSize: 16),
+                            fontSize: 14),
                       ),
                     ],
                   ),
                 ),
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => InvestmentSelectionScreen(),
-                  ));
-                })),
+                  showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                            backgroundColor:
+                                Theme.of(context).scaffoldBackgroundColor,
+                            title: Text('Wallet Fund Amount'),
+                            content: Form(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'How much do you want to fund (\u20A6)',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary),
+                                  ),
+                                  SizedBox(height: 8.0),
+                                  TextFormField(
+                                    controller: amountTextController,
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary),
+                                    decoration: InputDecoration(
+                                        prefixIcon: Icon(
+                                          Icons.payment,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ),
+                                        hintText: 'Amount',
+                                        hintStyle: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onPrimary),
+                                        fillColor: Theme.of(context).cardColor,
+                                        filled: true,
+                                        border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                width: 1),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0))),
+                                    validator: MultiValidator([
+                                      RequiredValidator(
+                                          errorText: 'Amount is required'),
+                                      MinLengthValidator(3,
+                                          errorText:
+                                              'Fund amount must start from \2UA6100'),
+                                    ]),
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                    ],
+                                    keyboardType: TextInputType.number,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            actions: [
+                              MaterialButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  showMaterialModalBottomSheet(
+                                    context: context,
+                                    builder: (context) => CheckoutWidget(
+                                        paymentType: PaymentType.FUND,
+                                        fundAmount: int.parse(
+                                            amountTextController.text)),
+                                  );
+                                },
+                                disabledColor: Theme.of(context)
+                                    .colorScheme
+                                    .secondary
+                                    .withOpacity(0.4),
+                                minWidth: MediaQuery.of(context).size.width,
+                                padding: EdgeInsets.all(16.0),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.0)),
+                                color: Theme.of(context).colorScheme.secondary,
+                                child: Text(
+                                  'Continue',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ],
+                          ));
+                });
+          },
+        )),
         SizedBox(
           width: 16.0,
         ),
@@ -151,7 +273,7 @@ class ActionsRow extends StatelessWidget {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         Icons.wallet_giftcard_outlined,
@@ -166,86 +288,31 @@ class ActionsRow extends StatelessWidget {
                                 .onPrimary
                                 .withOpacity(0.7),
                             // fontWeight: FontWeight.bold,
-                            fontSize: 16),
+                            fontSize: 14),
                       ),
                     ],
                   ),
                 ),
-                onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => InvestmentSelectionScreen(),
-                  ));
+                onPressed: () async {
+                  // var response = await PaymentRepository().makeTransfer(
+                  //     name: "ANYANWU GODSWILL NZUBECHI",
+                  //     accountNumber: "2112037132",
+                  //     bankCode: "033",
+                  //     amount: "10000");
+                  // print(response.data);
+
+                  makeWidthdrawal(context);
                 }))
       ],
     );
   }
-}
 
-class TransactionsWidget extends StatefulWidget {
-  @override
-  _TransactionsWidgetState createState() => _TransactionsWidgetState();
-}
+  void makeWidthdrawal(BuildContext context) async {
+    // var response = await PaymentRepository().getBankList;
+    // print('Bank List:$response');
 
-class _TransactionsWidgetState extends State<TransactionsWidget> {
-  @override
-  void initState() {
-    context.read<DataBloc>().add(LoadTransactionsEvent());
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<DataBloc, DataState>(
-      buildWhen: (previous, current) =>
-          current is TransactionsLoadedState ||
-          current is TransactionsLoadingState ||
-          current is TransactionsLoadErrorState,
-      builder: (context, state) {
-        if (state is TransactionsLoadedState) {
-          var transactions = state.transactions
-              .where((element) =>
-                  element.type == "Fund" || element.type == "Withdraw")
-              .toList();
-          if (transactions.isNotEmpty) {
-            return Container(
-              padding: EdgeInsets.all(16.0),
-              child: ListView.builder(
-                padding: EdgeInsets.zero,
-                shrinkWrap: true,
-                physics: BouncingScrollPhysics(),
-                itemCount: transactions.length,
-                itemBuilder: (context, index) {
-                  return TransactionItemWidget(
-                      transaction: transactions[index]);
-                },
-              ),
-            );
-          } else {
-            return Expanded(
-              child: Center(
-                child: Text(
-                  'You have not made any wallet transactions yet',
-                  style:
-                      TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-                ),
-              ),
-            );
-          }
-        }
-
-        if (state is TransactionsLoadingState) {
-          return Expanded(
-            child: Center(
-              child: SpinKitDualRing(
-                lineWidth: 2,
-                color: Theme.of(context).colorScheme.secondary,
-                size: 32,
-              ),
-            ),
-          );
-        }
-        return SizedBox.shrink();
-      },
-    );
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => WithdrawalScreen(),
+    ));
   }
 }

@@ -23,7 +23,7 @@ class _BalanceWidgetState extends State<BalanceWidget> {
   void initState() {
     currencyFormatter = NumberFormat.currency(
       decimalDigits: 2,
-      name: "₦",
+      name: "\u20A6",
     );
     isWalletVisible = true;
     super.initState();
@@ -36,7 +36,7 @@ class _BalanceWidgetState extends State<BalanceWidget> {
       child: Row(
         children: [
           Text(
-              '${isWalletVisible ? currencyFormatter.format(widget.balance) : '₦ *****'}',
+              '${isWalletVisible ? currencyFormatter.format(widget.balance) : '\u20A6 *****'}',
               style: TextStyle(
                   color: widget.textColor,
                   fontSize: 32.0,

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack/flutter_paystack.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
@@ -17,6 +18,12 @@ import 'package:uuid/uuid.dart';
 
 class DataService {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
+
+  Stream<NIUser.User> get user => _firebaseFirestore
+      .collection('users')
+      .doc(AuthBloc.uid)
+      .snapshots()
+      .map((doc) => NIUser.User.fromMap(doc.data()!));
 
   Future<dynamic> getUserInfo({
     required String userId,
@@ -48,6 +55,30 @@ class DataService {
     }
   }
 
+  Future<dynamic> updateUserPhoto({
+    required NIUser.User user,
+    required File photo,
+  }) async {
+    try {
+      ApiResponse res = await saveUserPhoto(user.id, photo);
+      if (res.error) {
+        return ApiResponse(data: res.data, error: true);
+      }
+
+      await _firebaseFirestore
+          .collection('users')
+          .doc(user.id)
+          .update({"photo": res.data});
+
+      // await _firebaseFirestore.collection("wallets")
+      return ApiResponse(
+          data: "Profile photo successfully updated", error: false);
+    } on FirebaseException catch (e) {
+      debugPrint('Error:${e.code}');
+      return ApiResponse(data: e.message, error: true);
+    }
+  }
+
   Future<void> createUserWallet(String uid) async {
     DocumentReference walletReference =
         _firebaseFirestore.collection("wallets").doc();
@@ -67,7 +98,7 @@ class DataService {
         .where('userId', isEqualTo: AuthBloc.uid)
         .get();
     List<String> ids =
-        iDocs.docs.map((e) => Investment.fromMap(e.data()!).packageId).toList();
+        iDocs.docs.map((e) => Investment.fromMap(e.data()).packageId).toList();
 
     QuerySnapshot snapshot;
     if (categoryId.isEmpty) {
@@ -84,20 +115,20 @@ class DataService {
     }
 
     var packages = snapshot.docs
-        .map((doc) => InvestmentPackage.fromMap(doc.data()!))
+        .map((doc) => InvestmentPackage.fromMap(doc.data()))
         .toList();
 
-    // if (ids.isNotEmpty) {
-    //   List<InvestmentPackage> d = [];
-    //   d.addAll(packages);
-    //   packages.forEach((element) {
-    //     if (ids.contains(element.id)) {
-    //       d.remove(element);
-    //     }
-    //   });
+    if (ids.isNotEmpty) {
+      List<InvestmentPackage> d = [];
+      d.addAll(packages);
+      packages.forEach((element) {
+        if (ids.contains(element.id)) {
+          d.remove(element);
+        }
+      });
 
-    //   return d;
-    // }
+      return d;
+    }
 
     return packages;
   }
@@ -105,20 +136,22 @@ class DataService {
   Future<ApiResponse> invest(
       BuildContext context, Investment investment, PaymentCard card) async {
     try {
-      var response = await makePayment(context, investment, card);
+      var response = await pay(investment.amount, context, card);
       if (!response.error) {
         var investRef = _firebaseFirestore.collection('user_investments').doc();
 
         var package = await getPackageDetails(investment.packageId);
         await logTransaction(NiTransacton(
             id: '',
-            title: 'New Investment',
+            title: 'Package Investment',
             description: 'You invested in ${package!.title}',
             type: 'Invest',
             transactionId: investment.refId,
             timestamp: DateTime.now().millisecondsSinceEpoch));
         investment.id = investRef.id;
-        investRef.set(investment.copyWith(id: investRef.id).toMap());
+        investRef.set(investment
+            .copyWith(id: investRef.id, refId: response.data)
+            .toMap());
 
         return ApiResponse(data: investRef.id, error: false);
       } else {
@@ -142,14 +175,29 @@ class DataService {
     }
   }
 
-  Stream<Wallet> fetchUserWallet({
+  Stream<Wallet> userWallet({
     required String userId,
   }) {
     return _firebaseFirestore
         .collection('wallets')
         .where('userId', isEqualTo: userId)
         .snapshots()
-        .map((snapshot) => Wallet.fromMap(snapshot.docs.first.data()!));
+        .map((snapshot) => Wallet.fromMap(snapshot.docs.first.data()));
+  }
+
+  Future<ApiResponse> fetchUserWallet({
+    required String userId,
+  }) async {
+    try {
+      var snapshot = await _firebaseFirestore
+          .collection('wallets')
+          .where('userId', isEqualTo: userId)
+          .get();
+      Wallet wallet = Wallet.fromMap(snapshot.docs.first.data());
+      return ApiResponse(data: wallet, error: false);
+    } on FirebaseException catch (e) {
+      return ApiResponse(data: e.message, error: true);
+    }
   }
 
   Future<dynamic> fundUserWallet(
@@ -162,7 +210,7 @@ class DataService {
       String id = doc.docs.first.id;
 
       print('Fetching user wallet ID:$id');
-      Wallet wallet = Wallet.fromMap(doc.docs.first.data()!);
+      Wallet wallet = Wallet.fromMap(doc.docs.first.data());
       var initialBalance = wallet.balance;
       Wallet w2 = wallet.copyWith(balance: initialBalance + amount);
       await _firebaseFirestore.collection('wallets').doc(id).update(w2.toMap());
@@ -173,7 +221,7 @@ class DataService {
     }
   }
 
-// Fetch the list of user investments
+  // Fetch the list of user investments
   Stream<List<Investment>> investments(String userId) {
     return _firebaseFirestore
         .collection("user_investments")
@@ -181,7 +229,7 @@ class DataService {
         .where('active', isEqualTo: true)
         .snapshots()
         .map((snapshots) => snapshots.docs
-            .map((doc) => Investment.fromMap(doc.data()!))
+            .map((doc) => Investment.fromMap(doc.data()))
             .toList());
   }
 
@@ -198,7 +246,7 @@ class DataService {
       var querySnapshots =
           await _firebaseFirestore.collection('categories').get();
       return querySnapshots.docs
-          .map((doc) => Category.fromMap(doc.data()!))
+          .map((doc) => Category.fromMap(doc.data()))
           .toList();
     } on FirebaseException catch (e) {
       return e;
@@ -241,7 +289,7 @@ class DataService {
           .collection('transactions')
           .get();
       return querySnapshots.docs
-          .map((doc) => NiTransacton.fromMap(doc.data()!))
+          .map((doc) => NiTransacton.fromMap(doc.data()))
           .toList();
     } on FirebaseException catch (e) {
       return e;
@@ -250,8 +298,61 @@ class DataService {
     }
   }
 
-  Future<ApiResponse> makePayment(
-      BuildContext context, Investment investment, PaymentCard card) async {
+  Future<ApiResponse> fundWallet(
+      int amount, BuildContext context, PaymentCard card) async {
+    try {
+      var response = await pay(amount, context, card);
+      await logTransaction(NiTransacton(
+          id: '',
+          title: 'Funded Wallet',
+          description:
+              'You funded your wallet with the amount of \u20A6$amount',
+          type: 'Fund',
+          transactionId: response.data,
+          timestamp: DateTime.now().millisecondsSinceEpoch));
+      var updateResult;
+      if (!response.error) {
+        updateResult =
+            await _firebaseFirestore.runTransaction<bool>((transaction) async {
+          var snapshot = await transaction
+              .get(_firebaseFirestore.collection("wallets").doc(AuthBloc.uid!));
+          if (snapshot.exists) {
+            Wallet wallet = Wallet.fromMap(snapshot.data()!);
+
+            int totalAmount = wallet.balance + amount;
+
+            transaction.update(
+                _firebaseFirestore.collection("wallets").doc(AuthBloc.uid),
+                Map.from({"balance": totalAmount}));
+          } else {
+            var documentReference =
+                _firebaseFirestore.collection("wallets").doc(AuthBloc.uid!);
+            transaction.set(
+                documentReference,
+                Wallet(
+                        walletId: documentReference.id,
+                        userId: AuthBloc.uid!,
+                        balance: amount,
+                        createdAt: DateTime.now().millisecondsSinceEpoch,
+                        updatedAt: DateTime.now().millisecondsSinceEpoch)
+                    .toMap());
+          }
+
+          return true;
+        });
+      }
+      if (updateResult) {
+        return ApiResponse(data: true, error: false);
+      } else {
+        return ApiResponse(data: "Unable to process your request", error: true);
+      }
+    } on FirebaseException catch (ex) {
+      return ApiResponse(data: ex.message, error: true);
+    }
+  }
+
+  Future<ApiResponse> pay(
+      int amount, BuildContext context, PaymentCard card) async {
     PaystackPlugin paystackPlugin = PaystackPlugin();
     await paystackPlugin.initialize(publicKey: Constants.PAYSTACK_PUBLIC_API);
     try {
@@ -263,9 +364,8 @@ class DataService {
         'nSecs': 5678
       });
 
-      investment = investment.copyWith(refId: ref);
       Charge charge = Charge()
-        ..amount = investment.amount * 100
+        ..amount = amount * 100
         ..reference = '$ref'
         ..card = card
         ..currency = 'NGN'
@@ -291,6 +391,67 @@ class DataService {
       }
     } catch (ex) {
       return ApiResponse(data: ex, error: true);
+    }
+  }
+
+  Future<ApiResponse> investViaWallet(Investment investment) async {
+    try {
+      var response = await fetchUserWallet(userId: AuthBloc.uid!);
+      var package = await getPackageDetails(investment.packageId);
+      if (!response.error) {
+        Wallet wallet = response.data;
+        if (investment.amount > wallet.balance) {
+          return ApiResponse(
+              data:
+                  'Sorry you do not have enough money in your wallet to complete this transaction.',
+              error: true);
+        }
+        var investRef = _firebaseFirestore.collection('user_investments').doc();
+
+        await logTransaction(NiTransacton(
+            id: '',
+            title: 'Package Investment',
+            description:
+                'You invested in ${package!.title} with the amount of ${investment.amount}',
+            type: 'Invest',
+            transactionId: investment.refId,
+            timestamp: DateTime.now().millisecondsSinceEpoch));
+        investment.id = investRef.id;
+        investRef.set(investment
+            .copyWith(id: investRef.id, refId: response.data)
+            .toMap());
+
+        return ApiResponse(data: investRef.id, error: false);
+      } else {
+        await logTransaction(NiTransacton(
+            id: '',
+            title: 'Failed Investment',
+            description:
+                'Your investment for ${package!.title} with the amount of ${investment.amount}',
+            type: 'Invest',
+            transactionId: investment.refId,
+            timestamp: DateTime.now().millisecondsSinceEpoch));
+
+        return ApiResponse(data: "Unable to complete request!", error: true);
+      }
+    } on FirebaseException catch (e) {
+      return ApiResponse(data: e.message, error: false);
+    }
+  }
+
+  Future<ApiResponse> saveUserPhoto(String id, File photo2) async {
+    try {
+      var task = await FirebaseStorage.instance
+          .ref()
+          .child('user_photos')
+          .child('$id')
+          .putFile(photo2);
+
+      var url = await task.ref.getDownloadURL();
+      return ApiResponse(data: url, error: false);
+    } on FirebaseException catch (e) {
+      debugPrint('Error:${e.code}');
+      return ApiResponse(data: e.message, error: true);
     }
   }
 }

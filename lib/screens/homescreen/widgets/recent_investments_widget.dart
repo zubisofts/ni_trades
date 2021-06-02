@@ -19,7 +19,7 @@ class _RecentInvestmentWidgetState extends State<RecentInvestmentWidget> {
   void initState() {
     currencyFormatter = NumberFormat.currency(
       decimalDigits: 2,
-      name: "₦",
+      name: "\u20A6",
     );
     context
         .read<DataBloc>()

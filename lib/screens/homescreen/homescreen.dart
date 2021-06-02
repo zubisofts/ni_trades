@@ -40,12 +40,6 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
-  void _selectedFab(int index) {
-    setState(() {
-      activePage = index;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(
@@ -97,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen>
               iconData: Icons.analytics_outlined, text: 'Investments'),
           FABBottomAppBarItem(iconData: Icons.payment_outlined, text: 'Wallet'),
           FABBottomAppBarItem(
-              iconData: Icons.swap_horiz_outlined, text: 'Activities'),
+              iconData: Icons.swap_horiz_outlined, text: 'Tranx'),
         ],
         backgroundColor:
             Theme.of(context).bottomNavigationBarTheme.backgroundColor!,

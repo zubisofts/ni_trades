@@ -15,7 +15,6 @@ import 'package:ni_trades/util/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   EquatableConfig.stringify = kDebugMode;
-
   // Bloc.observer = SimpleBlocObserver();
   await Firebase.initializeApp();
   runApp(MyApp());
@@ -39,6 +38,12 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     // SystemChrome.setSystemUIOverlayStyle(
     //     SystemUiOverlayStyle(statusBarColor: Colors.transparent));
+
+    // AppTheme.isFirstTimeUser.then((isFirstTimeUser) {
+    //   if (isFirstTimeUser) {
+    //     AppTheme.setThemeValue(false);
+    //   }
+    // });
 
     return MultiBlocProvider(
       providers: [

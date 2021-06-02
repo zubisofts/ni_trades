@@ -5,6 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/screens/auth_screen/login_screen.dart';
 import 'package:ni_trades/screens/homescreen/homescreen.dart';
+import 'package:ni_trades/screens/intro/onboarding_screen.dart';
+import 'package:ni_trades/util/app_theme.dart';
+import 'package:ni_trades/util/app_theme.dart';
 import 'package:ni_trades/wrapper.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,9 +19,17 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Future.delayed(Duration(seconds: 3)).then((value) {
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => Wrapper(),
-      ));
+      AppTheme.isFirstTimeUser.then((isFirstTimeUser) {
+        if (isFirstTimeUser) {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                builder: (context) => Wrapper(),
+              ));              
+        } else {
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => Wrapper(),
+          ));
+        }
+      });
     });
     super.initState();
   }

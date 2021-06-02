@@ -7,46 +7,53 @@ import 'package:sk_onboarding_screen/sk_onboarding_screen.dart';
 class OnBoardingScreen extends StatelessWidget {
   final pages = [
     SkOnboardingModel(
-        title: 'Choose your item',
-        description: 'Accept delivery request from your customers',
+        title: 'Learn to invest',
+        description:
+            "Learn to invest today, you don't need to wait until old age.",
         titleColor: Colors.black,
         descripColor: const Color(0xFF929794),
-        imagePath: 'assets/images/delivery_address.png'),
+        imagePath: 'assets/images/invest.png'),
     SkOnboardingModel(
-        title: 'Deliver to customer',
-        description: 'Deliver item to customer as soon as possible',
+        title: 'Monitor your progress',
+        description:
+            'You can monitor your investment progress without any stress.',
         titleColor: Colors.black,
         descripColor: const Color(0xFF929794),
-        imagePath: 'assets/images/ride.png'),
+        imagePath: 'assets/images/watch.png'),
     SkOnboardingModel(
-        title: 'Get paid quick and easy',
-        description: 'Get paid when delivery is completed and confirmed',
+        title:
+            'Withdraw and Rejoice',
+        description: 'When due, you can widthdraw and use your money for your personal purposes.',
         titleColor: Colors.black,
         descripColor: const Color(0xFF929794),
-        imagePath: 'assets/images/wallet.png'),
+        imagePath: 'assets/images/reap.png'),
   ];
 
   @override
   Widget build(BuildContext context) {
-    AppTheme.setFirstTimeUser(false);
-
     return Scaffold(
-      body: SKOnboardingScreen(
-        bgColor: Colors.white,
-        themeColor: const Color(0xFFf74269),
-        pages: pages,
-        skipClicked: (value) {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => LoginScreen()));
-        },
-        getStartedClicked: (value) {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => LoginScreen()));
-        },
+      body: Column(
+        children: [
+          Expanded(
+                      child: SKOnboardingScreen(
+              bgColor: Colors.white,
+              themeColor: Theme.of(context).colorScheme.secondary,
+              pages: pages,
+              skipClicked: (value) {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => LoginScreen()));
+              },
+              getStartedClicked: (value) {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => LoginScreen()));
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

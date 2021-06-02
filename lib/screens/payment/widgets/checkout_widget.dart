@@ -1,18 +1,20 @@
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_paystack/flutter_paystack.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:ni_trades/blocs/data/data_bloc.dart';
 import 'package:ni_trades/model/investment.dart';
-import 'package:ni_trades/util/my_utils.dart';
+import 'package:ni_trades/util/constants.dart';
 
 class CheckoutWidget extends StatefulWidget {
-  final Investment investment;
+  final Investment? investment;
+  final int? fundAmount;
+  final PaymentType paymentType;
 
-  const CheckoutWidget({Key? key, required this.investment}) : super(key: key);
+  CheckoutWidget(
+      {Key? key, this.investment, this.fundAmount, required this.paymentType})
+      : super(key: key);
 
   @override
   _CheckoutWidgetState createState() => _CheckoutWidgetState();
@@ -104,7 +106,7 @@ class _CheckoutWidgetState extends State<CheckoutWidget> {
                                 Icons.vpn_key_outlined,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
-                              hintText: 'CVV',
+                              hintText: 'CVC',
                               hintStyle: TextStyle(
                                   color:
                                       Theme.of(context).colorScheme.onPrimary),
@@ -155,19 +157,34 @@ class _CheckoutWidgetState extends State<CheckoutWidget> {
                     onPressed: () {
                       var validate = _form.currentState!.validate();
                       if (validate) {
-                        invest(
-                            widget.investment,
-                            context,
-                            PaymentCard(
-                                number: cardNumberTextController.text,
-                                // .replaceAll(' ', ''),
-                                cvc: cvcTextController.text,
-                                // expiryMonth: 4,
-                                // expiryYear: 33,
-                                expiryMonth: int.parse(
-                                    dateTextController.text.substring(0, 2)),
-                                expiryYear: int.parse(
-                                    dateTextController.text.substring(3))));
+                        if (widget.paymentType == PaymentType.INVEST) {
+                          invest(
+                              widget.investment!,
+                              context,
+                              PaymentCard(
+                                  number: cardNumberTextController.text,
+                                  // .replaceAll(' ', ''),
+                                  cvc: cvcTextController.text,
+                                  // expiryMonth: 4,
+                                  // expiryYear: 33,
+                                  expiryMonth: int.parse(
+                                      dateTextController.text.substring(0, 2)),
+                                  expiryYear: int.parse(
+                                      dateTextController.text.substring(3))));
+                        } else {
+                          fundWallet(
+                              widget.fundAmount,
+                              PaymentCard(
+                                  number: cardNumberTextController.text,
+                                  // .replaceAll(' ', ''),
+                                  cvc: cvcTextController.text,
+                                  // expiryMonth: 4,
+                                  // expiryYear: 33,
+                                  expiryMonth: int.parse(
+                                      dateTextController.text.substring(0, 2)),
+                                  expiryYear: int.parse(
+                                      dateTextController.text.substring(3))));
+                        }
                       }
                     },
                     disabledColor: Theme.of(context)
@@ -216,8 +233,13 @@ class _CheckoutWidgetState extends State<CheckoutWidget> {
 
   void invest(
       Investment investment, BuildContext context, PaymentCard card) async {
-    print(card);
     context.read<DataBloc>().add(InvestEvent(investment, context, card));
+  }
+
+  void fundWallet(amount, PaymentCard paymentCard) {
+    context
+        .read<DataBloc>()
+        .add(FundWalletEvent(context, paymentCard, amount: amount));
   }
 }
 
@@ -252,7 +274,7 @@ class _ExpiryDateTextFieldState extends State<ExpiryDateTextField> {
               borderSide: BorderSide.none,
               borderRadius: BorderRadius.circular(8.0))),
       validator: MultiValidator([
-        RequiredValidator(errorText: 'CVC is required'),
+        RequiredValidator(errorText: 'Expiry required'),
         MinLengthValidator(5, errorText: 'Date must be at least 4 digits long'),
         MaxLengthValidator(5, errorText: 'Date must be at least 4 digits long')
       ]),

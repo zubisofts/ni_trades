@@ -152,3 +152,69 @@ class TransactionsLoadedState extends DataState {
   @override
   List<Object> get props => [transactions];
 }
+
+class WalletFundLoadingState extends DataState {}
+
+class WalletFundSuccessfulState extends DataState {}
+
+class WalletFundFailureState extends DataState {
+  final String error;
+
+  WalletFundFailureState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class InvestViaWalletLoadingState extends DataState {}
+
+class InvestViaWalletSuccessfulState extends DataState {}
+
+class InvestViaWalletFailureState extends DataState {
+  final String error;
+
+  InvestViaWalletFailureState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class VerifyAccountLoadingState extends DataState {}
+
+class VerifyAccountSuccessfulState extends DataState {
+  final String message;
+
+  VerifyAccountSuccessfulState(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class VerifyAccountFailureState extends DataState {
+  final String error;
+
+  VerifyAccountFailureState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class UpdateUserPhotoLoadingState extends DataState{}
+
+class UserPhotoUpdatedState extends DataState {
+  final String message;
+
+  UserPhotoUpdatedState(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class UpdateUserPhotoFailureState extends DataState {
+  final String error;
+
+  UpdateUserPhotoFailureState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
