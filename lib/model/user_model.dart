@@ -8,6 +8,8 @@ class User extends Equatable {
   final String lastName;
   final String email;
   final String phoneNumber;
+  final String gender;
+  final String address;
   final String photo;
   final int createdAt;
   final int updatedAt;
@@ -17,6 +19,8 @@ class User extends Equatable {
     required this.lastName,
     required this.email,
     required this.phoneNumber,
+    required this.gender,
+    required this.address,
     required this.photo,
     required this.createdAt,
     required this.updatedAt,
@@ -28,6 +32,8 @@ class User extends Equatable {
     String? lastName,
     String? email,
     String? phoneNumber,
+    String? gender,
+    String? address,
     String? photo,
     int? createdAt,
     int? updatedAt,
@@ -38,6 +44,8 @@ class User extends Equatable {
       lastName: lastName ?? this.lastName,
       email: email ?? this.email,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      gender: gender ?? this.gender,
+      address: address ?? this.address,
       photo: photo ?? this.photo,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -51,6 +59,8 @@ class User extends Equatable {
       'lastName': lastName,
       'email': email,
       'phoneNumber': phoneNumber,
+      'gender': gender,
+      'address': address,
       'photo': photo,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
@@ -64,9 +74,9 @@ class User extends Equatable {
       lastName: map['lastName'],
       email: map['email'],
       phoneNumber: map['phoneNumber'],
-      photo: map['photo'].toString().isEmpty
-          ? "https://cdn.fastly.picmonkey.com/contentful/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=800&q=70"
-          : map['photo'],
+      gender: map['gender'],
+      address: map['address'],
+      photo: map['photo'],
       createdAt: map['createdAt'],
       updatedAt: map['updatedAt'],
     );
@@ -87,6 +97,8 @@ class User extends Equatable {
       lastName,
       email,
       phoneNumber,
+      gender,
+      address,
       photo,
       createdAt,
       updatedAt,

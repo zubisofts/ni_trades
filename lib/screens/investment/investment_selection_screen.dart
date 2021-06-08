@@ -11,6 +11,7 @@ import 'package:ni_trades/model/investment_package.dart';
 import 'package:ni_trades/screens/investment/investment_form_screen.dart';
 import 'package:ni_trades/screens/investment/investment_item_details.dart';
 import 'package:ni_trades/screens/investment/widgets/investment_package_widget.dart';
+import 'package:ni_trades/util/app_theme.dart';
 
 class InvestmentSelectionScreen extends StatefulWidget {
   @override
@@ -197,7 +198,9 @@ class _PackagesViewState extends State<PackagesView> {
                         color: Colors.black12),
                     child: Text(
                       '${widget.packages[index].category}',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                          color: AppTheme.getTextColor(getCategoryColor(
+                              widget.packages[index].category))),
                     )),
                 SizedBox(
                   height: 16.0,
@@ -225,14 +228,17 @@ class _PackagesViewState extends State<PackagesView> {
                             '${widget.packages[index].durationInMonths}',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: Colors.white,
+                                color: AppTheme.getTextColor(getCategoryColor(
+                                    widget.packages[index].category)),
                                 fontSize: 28,
                                 fontWeight: FontWeight.bold),
                           ),
                           Text(
                             'Months',
                             textAlign: TextAlign.center,
-                            style: TextStyle(color: Colors.white),
+                            style: TextStyle(
+                                color: AppTheme.getTextColor(getCategoryColor(
+                                    widget.packages[index].category))),
                           ),
                         ],
                       ),
@@ -243,11 +249,16 @@ class _PackagesViewState extends State<PackagesView> {
                   height: 16.0,
                 ),
                 Expanded(
-                  child: Text(
-                    '${widget.packages[index].description}',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.fade,
-                    style: TextStyle(color: Colors.white),
+                  child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(),
+                    child: Text(
+                      '${widget.packages[index].description}',
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.fade,
+                      style: TextStyle(
+                          color: AppTheme.getTextColor(getCategoryColor(
+                              widget.packages[index].category))),
+                    ),
                   ),
                 ),
                 SizedBox(
@@ -272,10 +283,15 @@ class _PackagesViewState extends State<PackagesView> {
                   style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.symmetric(horizontal: 32.0),
                       shape: StadiumBorder(),
-                      side: BorderSide(width: 2, color: Colors.white)),
+                      side: BorderSide(
+                          width: 2,
+                          color: AppTheme.getTextColor(getCategoryColor(
+                              widget.packages[index].category)))),
                   child: Text(
                     'Invest',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                        color: AppTheme.getTextColor(
+                            getCategoryColor(widget.packages[index].category))),
                   ),
                 )
               ],
@@ -300,7 +316,7 @@ class _PackagesViewState extends State<PackagesView> {
     if (category == 'Agriculture') {
       return Color(0xFF2e7d32);
     } else if (category == 'Fashion') {
-      return Color(0xFFff8f00);
+      return Colors.yellow;
     } else {
       return Color(0xFFaf4448);
     }

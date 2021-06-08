@@ -116,3 +116,31 @@ class UpdateUserPhotoEvent extends DataEvent {
   @override
   List<Object> get props => [user, photo];
 }
+
+class WithdrawalRequestEvent extends DataEvent {
+  final WithdrawRequest withdrawRequest;
+
+  WithdrawalRequestEvent(this.withdrawRequest);
+
+  @override
+  List<Object> get props => [withdrawRequest];
+}
+
+class FetchInvestmentCountDownEvent extends DataEvent {
+  final int startDate;
+  final int duration;
+
+  FetchInvestmentCountDownEvent(this.startDate, this.duration);
+
+  @override
+  List<Object> get props => [startDate, duration];
+}
+
+class SendInvestmentWithdrawalEvent extends DataEvent {
+  final InvestmentWithdrawRequest request;
+
+  SendInvestmentWithdrawalEvent(this.request);
+
+  @override
+  List<Object> get props => [request];
+}

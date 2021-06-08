@@ -5,25 +5,31 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
-import 'package:ni_trades/blocs/data/data_bloc.dart';
 import 'package:ni_trades/model/user_model.dart';
+import 'package:ni_trades/screens/auth_screen/widget/gender_selection_widget.dart';
 import 'package:ni_trades/screens/homescreen/homescreen.dart';
 import 'package:ni_trades/util/constants.dart';
-import 'package:page_transition/page_transition.dart';
 
 class SignupScreen extends StatefulWidget {
+  final String email;
+
+  const SignupScreen({Key? key, required this.email}) : super(key: key);
+
   @override
   _SignupScreenState createState() => _SignupScreenState();
 }
 
 class _SignupScreenState extends State<SignupScreen> {
   GlobalKey<FormState> _form = GlobalKey<FormState>();
-  TextEditingController emailTextController = TextEditingController();
+  // TextEditingController emailTextController = TextEditingController();
   TextEditingController passwordTextController = TextEditingController();
   TextEditingController fnameTextController = TextEditingController();
   TextEditingController lnameTextController = TextEditingController();
   TextEditingController phoneTextController = TextEditingController();
+  TextEditingController addressTextController = TextEditingController();
   bool _formValidated = false;
+
+  String gender = 'Male';
 
   void _validate() {
     setState(() {
@@ -124,13 +130,21 @@ class _SignupScreenState extends State<SignupScreen> {
                                         color: Colors.blueGrey)),
                           ),
                           SizedBox(height: 16.0),
+                          GenderSelectionWidget(
+                              onGenderSelected: (selectedGender) {
+                            gender = selectedGender;
+                          }),
+                          SizedBox(
+                            height: 16.0,
+                          ),
                           TextFormField(
-                            validator: EmailValidator(
-                                errorText: "Please enter a valid email"),
+                            validator: RequiredValidator(
+                                errorText: 'This field is required'),
                             onChanged: (v) {
                               // _validate();
                             },
-                            controller: emailTextController,
+                            keyboardType: TextInputType.streetAddress,
+                            controller: addressTextController,
                             cursorColor:
                                 Theme.of(context).colorScheme.secondary,
                             cursorHeight: 24,
@@ -138,21 +152,44 @@ class _SignupScreenState extends State<SignupScreen> {
                                 color: Theme.of(context).colorScheme.onPrimary),
                             decoration: Constants.inputDecoration(context)
                                 .copyWith(
-                                    hintText: 'Email Address',
-                                    prefixIcon: Icon(Icons.email,
+                                    hintText: 'Address',
+                                    prefixIcon: Icon(Icons.person,
                                         color: Colors.blueGrey)),
                           ),
-                          SizedBox(
-                            height: 16.0,
-                          ),
+                          SizedBox(height: 16.0),
+                          // TextFormField(
+                          //   validator: EmailValidator(
+                          //       errorText: "Please enter a valid email"),
+                          //   onChanged: (v) {
+                          //     // _validate();
+                          //   },
+                          //   controller: emailTextController,
+                          //   cursorColor:
+                          //       Theme.of(context).colorScheme.secondary,
+                          //   cursorHeight: 24,
+                          //   style: TextStyle(
+                          //       color: Theme.of(context).colorScheme.onPrimary),
+                          //   decoration: Constants.inputDecoration(context)
+                          //       .copyWith(
+                          //           hintText: 'Email Address',
+                          //           prefixIcon: Icon(Icons.email,
+                          //               color: Colors.blueGrey)),
+                          // ),
+                          // SizedBox(
+                          //   height: 16.0,
+                          // ),
                           TextFormField(
                             // validator:
                             //     LYDPhoneValidator(errorText: "Please enter a valid phone number"),
                             onChanged: (v) {
                               _validate();
                             },
-                            keyboardType: TextInputType.phone,
+                            keyboardType: TextInputType.numberWithOptions(
+                                signed: false, decimal: false),
                             controller: phoneTextController,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                             cursorColor:
                                 Theme.of(context).colorScheme.secondary,
                             cursorHeight: 24,
@@ -216,11 +253,17 @@ class _SignupScreenState extends State<SignupScreen> {
                                         dismissOnBackKeyPress: false,
                                         dismissOnTouchOutside: false,
                                         btnOkText: 'Got It!',
+                                        dialogBackgroundColor: Theme.of(context)
+                                            .scaffoldBackgroundColor,
                                         btnOkColor: Theme.of(context)
                                             .colorScheme
                                             .secondary,
                                         btnOkOnPress: () {
-                                          Navigator.of(context).pop();
+                                          // Navigator.of(context).pop();
+                                          Navigator.of(context).pushReplacement(
+                                              MaterialPageRoute(
+                                            builder: (context) => HomeScreen(),
+                                          ));
                                         },
                                         padding: EdgeInsets.all(16.0))
                                     .show();
@@ -249,33 +292,37 @@ class _SignupScreenState extends State<SignupScreen> {
                                   onPressed: state is SignUpLoadingState
                                       ? null
                                       : () {
-                                          context.read<AuthBloc>().add(
-                                                SignUpEvent(
-                                                    user: User(
-                                                        id: "",
-                                                        firstName:
-                                                            fnameTextController
-                                                                .text,
-                                                        lastName:
-                                                            lnameTextController
-                                                                .text,
-                                                        email:
-                                                            emailTextController
-                                                                .text,
-                                                        phoneNumber:
-                                                            phoneTextController
-                                                                .text,
-                                                        photo: '',
-                                                        createdAt: DateTime
-                                                                .now()
-                                                            .millisecondsSinceEpoch,
-                                                        updatedAt: DateTime
-                                                                .now()
-                                                            .millisecondsSinceEpoch),
-                                                    password:
-                                                        passwordTextController
-                                                            .text),
-                                              );
+                                          if (_form.currentState!.validate())
+                                            context.read<AuthBloc>().add(
+                                                  SignUpEvent(
+                                                      user: User(
+                                                          id: "",
+                                                          firstName:
+                                                              fnameTextController
+                                                                  .text,
+                                                          lastName:
+                                                              lnameTextController
+                                                                  .text,
+                                                          email: widget.email,
+                                                          phoneNumber:
+                                                              phoneTextController
+                                                                  .text,
+                                                          photo: gender == 'Male'
+                                                              ? 'https://firebasestorage.googleapis.com/v0/b/ni-trades.appspot.com/o/images%2Fbusinessman-131964752420034311.png?alt=media&token=9943056f-97e3-485f-9ddc-846f7eda8e6f'
+                                                              : 'https://firebasestorage.googleapis.com/v0/b/ni-trades.appspot.com/o/images%2Fbusinesswoman-131964752427078920.png?alt=media&token=6ed9d82b-69e6-4145-bbfb-82df150ab4ab',
+                                                          address: addressTextController
+                                                              .text,
+                                                          gender: gender,
+                                                          createdAt: DateTime
+                                                                  .now()
+                                                              .millisecondsSinceEpoch,
+                                                          updatedAt: DateTime
+                                                                  .now()
+                                                              .millisecondsSinceEpoch),
+                                                      password:
+                                                          passwordTextController
+                                                              .text),
+                                                );
                                         },
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,

@@ -199,7 +199,7 @@ class VerifyAccountFailureState extends DataState {
   List<Object> get props => [error];
 }
 
-class UpdateUserPhotoLoadingState extends DataState{}
+class UpdateUserPhotoLoadingState extends DataState {}
 
 class UserPhotoUpdatedState extends DataState {
   final String message;
@@ -217,4 +217,56 @@ class UpdateUserPhotoFailureState extends DataState {
 
   @override
   List<Object> get props => [error];
+}
+
+class WithdrawalRequestLoadingState extends DataState {}
+
+class WithdrawalRequestErrorState extends DataState {
+  final String error;
+
+  WithdrawalRequestErrorState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class WithdrawalRequestSentState extends DataState {
+  final String message;
+
+  WithdrawalRequestSentState(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class InvestmentCountDownLoadingState extends DataState {}
+
+class InvestmentCountDownFetchedState extends DataState {
+  final int result;
+
+  InvestmentCountDownFetchedState(this.result);
+
+  @override
+  List<Object> get props => [result];
+}
+
+class InvestmentCountDownFetchErrorState extends DataState {}
+
+class InvestmentWithdrawalRequestLoadingState extends DataState {}
+
+class InvestmentWithdrawalRequestErrorState extends DataState {
+  final String error;
+
+  InvestmentWithdrawalRequestErrorState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class InvestmentWithdrawalRequestSentState extends DataState {
+  final String message;
+
+  InvestmentWithdrawalRequestSentState(this.message);
+  @override
+  List<Object> get props => [message];
 }

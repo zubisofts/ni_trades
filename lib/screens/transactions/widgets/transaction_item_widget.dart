@@ -1,8 +1,8 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:ni_trades/model/transaction.dart';
 import 'package:ni_trades/screens/transactions/transactions_details_screen.dart';
+import 'package:ni_trades/util/my_utils.dart';
 
 class TransactionItemWidget extends StatelessWidget {
   final NiTransacton transaction;
@@ -37,12 +37,22 @@ class TransactionItemWidget extends StatelessWidget {
                 fontSize: 16.0,
                 fontWeight: FontWeight.bold)),
         subtitle: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Text(transaction.description,
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimary,
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.bold)),
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(transaction.description,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold)),
+              Text(AppUtils.getDateFromTimestamp(transaction.timestamp),
+                  style: TextStyle(
+                    color: Colors.blueGrey,
+                    fontSize: 12.0,
+                  )),
+            ],
+          ),
         ),
         minVerticalPadding: 16,
       ),

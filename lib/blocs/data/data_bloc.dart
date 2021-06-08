@@ -11,9 +11,11 @@ import 'package:ni_trades/model/api_response.dart';
 import 'package:ni_trades/model/category.dart';
 import 'package:ni_trades/model/investment.dart';
 import 'package:ni_trades/model/investment_package.dart';
+import 'package:ni_trades/model/investment_withdraw_request.dart';
 import 'package:ni_trades/model/transaction.dart';
 import 'package:ni_trades/model/user_model.dart' as NIUser;
 import 'package:ni_trades/model/wallet.dart';
+import 'package:ni_trades/model/withdraw_request.dart';
 import 'package:ni_trades/repository/data_repo.dart';
 import 'package:ni_trades/repository/payment_repository.dart';
 
@@ -93,6 +95,19 @@ class DataBloc extends Bloc<DataEvent, DataState> {
 
     if (event is UpdateUserPhotoEvent) {
       yield* _mapUpdateUserPhotoEventToState(event.user, event.photo);
+    }
+
+    if (event is WithdrawalRequestEvent) {
+      yield* _mapWithdrawalRequestEventToState(event.withdrawRequest);
+    }
+
+    if (event is FetchInvestmentCountDownEvent) {
+      yield* _mapFetchInvestmentCountDownTimeEventToState(
+          event.startDate, event.duration);
+    }
+
+    if (event is SendInvestmentWithdrawalEvent) {
+      yield* _mapSendInvestmentWithdrawalEventToState(event.request);
     }
   }
 
@@ -212,6 +227,42 @@ class DataBloc extends Bloc<DataEvent, DataState> {
       yield UpdateUserPhotoFailureState(res.data);
     } else {
       yield UserPhotoUpdatedState(res.data);
+    }
+  }
+
+  Stream<DataState> _mapWithdrawalRequestEventToState(
+      WithdrawRequest withdrawRequest) async* {
+    yield WithdrawalRequestLoadingState();
+    var apiResponse = await PaymentRepository()
+        .sendWithdrawalRequest(withdrawRequest: withdrawRequest);
+    if (apiResponse.error) {
+      yield WithdrawalRequestErrorState(apiResponse.data);
+    } else {
+      yield WithdrawalRequestSentState(apiResponse.data);
+    }
+  }
+
+  Stream<DataState> _mapFetchInvestmentCountDownTimeEventToState(
+      int startDate, int duration) async* {
+    yield InvestmentCountDownLoadingState();
+    var apiResponse =
+        await dataService.getFutureInvestmentCountDown(startDate, duration);
+    if (!apiResponse.error) {
+      yield InvestmentCountDownFetchedState(apiResponse.data);
+    } else {
+      yield InvestmentCountDownFetchErrorState();
+    }
+  }
+
+  Stream<DataState> _mapSendInvestmentWithdrawalEventToState(
+      InvestmentWithdrawRequest request) async* {
+    yield InvestmentWithdrawalRequestLoadingState();
+    var apiResponse =
+        await dataService.sendInvestmentWithdrawRequest(request);
+    if (apiResponse.error) {
+      yield InvestmentWithdrawalRequestErrorState(apiResponse.data);
+    } else {
+      yield InvestmentWithdrawalRequestSentState(apiResponse.data);
     }
   }
 }

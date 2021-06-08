@@ -58,3 +58,66 @@ class UserLoggedInState extends AuthState {
   @override
   List<Object> get props => [user];
 }
+
+class SendOTPLoadingState extends AuthState {}
+
+class SendOTPErrorState extends AuthState {
+  final String error;
+
+  SendOTPErrorState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class OTPSentState extends AuthState {
+  final String message;
+
+  OTPSentState(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class VerifyOTPLoadingState extends AuthState {}
+
+class VerifyOTPErrorState extends AuthState {
+  final String error;
+
+  VerifyOTPErrorState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class OTPVerifiedState extends AuthState {
+  final String message;
+
+  OTPVerifiedState(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+class ChangePasswordLoadingState extends AuthState {}
+
+class PasswordChangeErrorState extends AuthState {
+  final String error;
+
+  PasswordChangeErrorState(this.error);
+
+  @override
+  List<Object> get props => [error];
+}
+
+class PasswordChangedState extends AuthState {}
+
+class SendPasswordResetLinkLoadingState extends AuthState {}
+
+class SendPasswordResetLinkFailureState extends AuthState {
+  final String error;
+
+  SendPasswordResetLinkFailureState(this.error);
+}
+
+class PasswordResetLinkSentState extends AuthState {}

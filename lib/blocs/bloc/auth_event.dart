@@ -35,3 +35,41 @@ class AuthStateChangedEvent extends AuthEvent {
 }
 
 class LogoutUserEvent extends AuthEvent {}
+
+class SendOTPEvent extends AuthEvent {
+  final String email;
+
+  SendOTPEvent(this.email);
+
+  @override
+  List<Object> get props => [email];
+}
+
+class VerifyOTPEvent extends AuthEvent {
+  final String otp;
+  final String email;
+
+  VerifyOTPEvent(this.otp, this.email);
+
+  @override
+  List<Object> get props => [otp, email];
+}
+
+class ChangePasswordEvent extends AuthEvent {
+  final String oldPassword;
+  final String newPassword;
+
+  ChangePasswordEvent({required this.oldPassword, required this.newPassword});
+
+  @override
+  List<Object> get props => [oldPassword, newPassword];
+}
+
+class SendPasswordResetLink extends AuthEvent {
+  final String email;
+
+  SendPasswordResetLink(this.email);
+
+  @override
+  List<Object> get props => [email];
+}

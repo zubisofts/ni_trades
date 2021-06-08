@@ -5,7 +5,9 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
+import 'package:ni_trades/screens/auth_screen/forgot_password.dart';
 import 'package:ni_trades/screens/auth_screen/signup_screen.dart';
+import 'package:ni_trades/screens/auth_screen/verify_email_screen.dart';
 import 'package:ni_trades/screens/homescreen/homescreen.dart';
 import 'package:ni_trades/util/constants.dart';
 import 'package:page_transition/page_transition.dart';
@@ -158,9 +160,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Expanded(child: Container()),
                                   InkWell(
                                     onTap: () {
-                                      // Navigator.of(context).push(MaterialPageRoute(
-                                      //     builder: (BuildContext context) =>
-                                      //         ForgotPasswordScreen()));
+                                      Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) =>
+                                                  ForgotPasswordScreen()));
                                     },
                                     child: Text('Forgot password?',
                                         style: TextStyle(
@@ -247,10 +250,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 children: [
                                   InkWell(
                                     onTap: () {
-                                      Navigator.of(context).push(PageTransition(
-                                        child: SignupScreen(),
+                                      Navigator.of(context)
+                                          .push((PageTransition(
+                                        child: VerifyEmailScreen(),
                                         type: PageTransitionType.leftToRight,
-                                      ));
+                                      )));
                                     },
                                     child: Text('Not a member? sign up here',
                                         style: TextStyle(

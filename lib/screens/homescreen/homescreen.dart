@@ -7,7 +7,6 @@ import 'package:ni_trades/screens/investment/investments_screen.dart';
 import 'package:ni_trades/screens/payment/payment_screen.dart';
 import 'package:ni_trades/screens/transactions/transactions_screen.dart';
 import 'package:ni_trades/util/diamond_shaped_notch.dart';
-import 'package:page_transition/page_transition.dart';
 
 class HomeScreen extends StatefulWidget {
   @override

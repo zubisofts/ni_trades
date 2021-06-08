@@ -55,7 +55,7 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
                       padding: EdgeInsets.only(
                         right: 16.0,
                         left: 16.0,
-                        top: 16.0,
+                        // top: 16.0,
                       ),
                       child: ListView.builder(
                         primary: false,

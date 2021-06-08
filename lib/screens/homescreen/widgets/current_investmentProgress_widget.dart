@@ -38,8 +38,11 @@ class CurrentInvestmentProgressWidget extends StatelessWidget {
                     current is FetchUserInvestmentsLoadingState,
                 builder: (context, state) {
                   if (state is UserInvestmentsFetchedState) {
-                    List<Investment> activeInvestments =
-                        state.investments.where((i) => i.active).toList();
+                    List<Investment> activeInvestments = state.investments
+                        .where(
+                          (i) => i.status == InvestmentStatus.Pending,
+                        )
+                        .toList();
                     if (activeInvestments.isNotEmpty) {
                       return PageView.builder(
                         itemCount: activeInvestments.length,

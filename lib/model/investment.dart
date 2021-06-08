@@ -3,25 +3,28 @@ import 'dart:convert';
 import 'package:equatable/equatable.dart';
 
 class Investment with EquatableMixin {
-  String id;
-  String packageId;
-  String userId;
-  String refId;
-  int amount;
-  int startDate;
-  bool active;
-  bool isDue;
+  final String id;
+  final String packageId;
+  final String userId;
+  final String refId;
+  final int amount;
+  final int startDate;
+  final int duration;
+  final int returns;
+  final InvestmentStatus status;
+  final bool isDue;
   Investment({
     required this.id,
     required this.packageId,
     required this.userId,
     required this.refId,
     required this.amount,
+    required this.duration,
+    required this.returns,
     required this.startDate,
-    required this.active,
+    required this.status,
     required this.isDue,
   });
-
 
   Investment copyWith({
     String? id,
@@ -30,7 +33,9 @@ class Investment with EquatableMixin {
     String? refId,
     int? amount,
     int? startDate,
-    bool? active,
+    int? duration,
+    int? returns,
+    InvestmentStatus? status,
     bool? isDue,
   }) {
     return Investment(
@@ -40,7 +45,9 @@ class Investment with EquatableMixin {
       refId: refId ?? this.refId,
       amount: amount ?? this.amount,
       startDate: startDate ?? this.startDate,
-      active: active ?? this.active,
+      duration: duration ?? this.duration,
+      returns: returns ?? this.returns,
+      status: status ?? this.status,
       isDue: isDue ?? this.isDue,
     );
   }
@@ -53,7 +60,9 @@ class Investment with EquatableMixin {
       'refId': refId,
       'amount': amount,
       'startDate': startDate,
-      'active': active,
+      'duration': duration,
+      'status': typeValues.reverse[status],
+      'returns': returns,
       'isDue': isDue,
     };
   }
@@ -66,14 +75,17 @@ class Investment with EquatableMixin {
       refId: map['refId'],
       amount: map['amount'],
       startDate: map['startDate'],
-      active: map['active'],
+      duration: map['duration'],
+      returns: map['returns'],
+      status: typeValues.map[map["status"]]!,
       isDue: map['isDue'],
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory Investment.fromJson(String source) => Investment.fromMap(json.decode(source));
+  factory Investment.fromJson(String source) =>
+      Investment.fromMap(json.decode(source));
 
   @override
   bool get stringify => true;
@@ -87,8 +99,31 @@ class Investment with EquatableMixin {
       refId,
       amount,
       startDate,
-      active,
+      duration,
+      returns,
+      status,
       isDue,
     ];
+  }
+}
+
+enum InvestmentStatus { Completed, Processing, Pending, Aborted }
+
+final typeValues = EnumValues({
+  "completed": InvestmentStatus.Completed,
+  "pending": InvestmentStatus.Pending,
+  "processing": InvestmentStatus.Processing,
+  "aborted": InvestmentStatus.Aborted,
+});
+
+class EnumValues<T> {
+  late Map<String, T> map;
+  Map<T, String> reverseMap = {};
+
+  EnumValues(this.map);
+
+  Map<T, String> get reverse {
+    reverseMap = map.map((k, v) => new MapEntry(v, k));
+    return reverseMap;
   }
 }

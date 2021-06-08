@@ -230,4 +230,89 @@ class AppUtils {
       ),
     );
   }
+
+static void showLoaderDialog(BuildContext context, String msg) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        content: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SpinKitDualRing(
+              color: Theme.of(context).colorScheme.secondary,
+              lineWidth: 2,
+              size: 50.0,
+            ),
+            Text(
+              msg,
+              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  static void showErrorDialog(BuildContext context, String s) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: Icon(
+          Icons.mood_bad_outlined,
+          size: 50,
+          color: Colors.red,
+        ),
+        content: Text(
+          s,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'OK',
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.secondary),
+              ))
+        ],
+      ),
+    );
+  }
+static void showSuccessDialog(BuildContext context, String message) {
+    AwesomeDialog(
+        context: context,
+        title: 'Success',
+        dialogType: DialogType.SUCCES,
+        animType: AnimType.SCALE,
+        headerAnimationLoop: false,
+        dismissOnTouchOutside: false,
+        dismissOnBackKeyPress: false,
+        dialogBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Text(
+            'Withdrawal request has been sent successfully!',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+          ),
+        ),
+        btnOk: TextButton(
+          onPressed: () {
+            Navigator.of(context)..pop()..pop();
+          },
+          style: TextButton.styleFrom(
+              padding: EdgeInsets.all(16.0),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0)),
+              backgroundColor: Theme.of(context).colorScheme.secondary),
+          child: Text('Dismiss'),
+        )).show();
+  }
+
+
 }

@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ni_trades/blocs/data/data_bloc.dart';
+import 'package:ni_trades/model/api_response.dart';
 import 'package:ni_trades/model/user_model.dart' as NIUser;
 import 'package:ni_trades/repository/auth_repo.dart';
 import 'package:ni_trades/repository/data_repo.dart';
@@ -49,6 +51,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     if (event is LogoutUserEvent) {
       await authService.logoutUser();
     }
+
+    if (event is SendOTPEvent) {
+      yield* _mapSendOTPEventToState(event.email);
+    }
+
+    if (event is VerifyOTPEvent) {
+      yield* _mapVerifyOTPEventToState(event.otp, event.email);
+    }
+
+    if (event is SendPasswordResetLink) {
+      yield* _mapSendPasswordResetLinkToState(event.email);
+    }
   }
 
   Stream<AuthState> _mapSignUpEventToState(
@@ -83,6 +97,36 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         user);
     if (user != null) {
       uid = user.uid;
+    }
+  }
+
+  Stream<AuthState> _mapSendOTPEventToState(String email) async* {
+    yield SendOTPLoadingState();
+    ApiResponse response = await AuthService().sendOTP(email);
+    if (response.error) {
+      yield SendOTPErrorState(response.data);
+    } else {
+      yield OTPSentState(response.data);
+    }
+  }
+
+  Stream<AuthState> _mapVerifyOTPEventToState(String otp, String email) async* {
+    yield VerifyOTPLoadingState();
+    ApiResponse response = await AuthService().verifyOTP(otp, email);
+    if (response.error) {
+      yield VerifyOTPErrorState(response.data);
+    } else {
+      yield OTPVerifiedState(response.data);
+    }
+  }
+
+  Stream<AuthState> _mapSendPasswordResetLinkToState(String email) async*{
+     yield SendPasswordResetLinkLoadingState();
+    ApiResponse response = await AuthService().sendPasswordResetLink(email);
+    if (response.error) {
+      yield SendPasswordResetLinkFailureState(response.data);
+    } else {
+      yield PasswordResetLinkSentState();
     }
   }
 }

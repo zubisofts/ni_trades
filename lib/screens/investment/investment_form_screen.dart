@@ -255,7 +255,9 @@ class _InvestmentFormScreenState extends State<InvestmentFormScreen> {
                             refId: '',
                             amount: int.parse(amountTextController.text.trim()),
                             startDate: DateTime.now().millisecondsSinceEpoch,
-                            active: true,
+                            duration: widget.investmentPackage.durationInMonths,
+                            returns: widget.investmentPackage.returns,
+                            status: InvestmentStatus.Pending,
                             isDue: false);
                         // invest(investment, paystack);
 

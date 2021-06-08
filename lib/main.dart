@@ -71,7 +71,8 @@ class _MyAppState extends State<MyApp> {
             debugShowCheckedModeBanner: false,
             darkTheme: AppTheme.darkTheme,
             theme: AppTheme.lightTheme,
-            themeMode: ThemeMode.dark,
+            // themeMode: ThemeMode.light,
+            themeMode: isDarkTheme ? ThemeMode.dark : ThemeMode.light,
             home: App(),
           );
         },

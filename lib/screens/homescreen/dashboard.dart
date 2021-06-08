@@ -21,6 +21,7 @@ import 'package:ni_trades/screens/payment/widgets/checkout_widget.dart';
 import 'package:ni_trades/screens/profile/user_profile_screen.dart';
 import 'package:ni_trades/util/constants.dart';
 import 'package:ni_trades/util/my_utils.dart';
+import 'package:shimmer/shimmer.dart';
 
 class DashBoardScreen extends StatefulWidget {
   @override
@@ -173,16 +174,33 @@ class _DashBoardScreenState extends State<DashBoardScreen> {
                                           UserProfileScreen(user: state.user),
                                     ));
                                   },
-                                  child: Container(
-                                    margin: EdgeInsets.all(8.0),
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      image: DecorationImage(
+                                  child: Hero(
+                                    tag: 'profile-image',
+                                    child: Container(
+                                      margin: EdgeInsets.all(8.0),
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: ClipOval(
+                                        child: CachedNetworkImage(
+                                          imageUrl: '${state.user.photo}',
                                           fit: BoxFit.cover,
-                                          image: CachedNetworkImageProvider(
-                                              '${state.user.photo}')),
+                                          placeholder: (context, url) =>
+                                              Shimmer.fromColors(
+                                                  child: Container(),
+                                                  baseColor: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary
+                                                      .withOpacity(0.5),
+                                                  highlightColor:
+                                                      Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary
+                                                          .withOpacity(0.1)),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 );
