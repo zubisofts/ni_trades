@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack/flutter_paystack.dart';
+import 'package:intl/intl.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/model/api_response.dart';
 import 'package:ni_trades/model/category.dart';
@@ -333,7 +334,8 @@ class DataService {
       await logTransaction(NiTransacton(
           id: '',
           title: 'Funded Wallet',
-          description: 'You funded your wallet with the amount of NGN $amount',
+          description:
+              'You funded your wallet with the amount of ${NumberFormat.currency(name: '₦', decimalDigits: 0).format(amount)}',
           type: 'Fund',
           transactionId: response.data,
           timestamp: DateTime.now().millisecondsSinceEpoch));
@@ -445,7 +447,7 @@ class DataService {
             id: '',
             title: 'Package Investment',
             description:
-                'You invested in ${package!.title} with the amount of NGN ${investment.amount}',
+                'You invested in ${package!.title} with the amount of ${NumberFormat.currency(name: '₦', decimalDigits: 0).format(investment.amount)}',
             type: 'Invest',
             transactionId: investment.refId,
             timestamp: DateTime.now().millisecondsSinceEpoch));

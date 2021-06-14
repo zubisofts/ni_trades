@@ -25,12 +25,7 @@ class TransactionItemWidget extends StatelessWidget {
           ));
         },
         contentPadding: EdgeInsets.all(8.0),
-        leading: SvgPicture.asset(
-          transaction.type == 'Invest'
-              ? 'assets/icons/investments.svg'
-              : 'assets/icons/wallet.svg',
-          width: 45,
-        ),
+        leading: _buildIconWidget(transaction),
         title: Text(transaction.title,
             style: TextStyle(
                 color: Theme.of(context).colorScheme.onPrimary,
@@ -57,5 +52,24 @@ class TransactionItemWidget extends StatelessWidget {
         minVerticalPadding: 16,
       ),
     );
+  }
+
+  Widget _buildIconWidget(NiTransacton transaction) {
+    if (transaction.type == 'Fund') {
+      return SvgPicture.asset(
+        'assets/icons/wallet.svg',
+        width: 45,
+      );
+    } else if (transaction.type == 'Invest') {
+      return SvgPicture.asset(
+        'assets/icons/investments.svg',
+        width: 45,
+      );
+    } else {
+      return SvgPicture.asset(
+        'assets/icons/payment.svg',
+        width: 45,
+      );
+    }
   }
 }

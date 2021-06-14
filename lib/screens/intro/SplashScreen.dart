@@ -48,8 +48,8 @@ class _SplashScreenState extends State<SplashScreen> {
                   scale: 1,
                   curve: Curves.bounceInOut,
                   duration: Duration(milliseconds: 500),
-                  child: Image.asset('assets/images/logo_size.jpg',
-                      width: 200.0)))),
+                  child: Image.asset('assets/images/ni_trade_logo2.png',
+                      width: 300.0)))),
     );
   }
 }

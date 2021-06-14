@@ -5,7 +5,7 @@
 
    <application
         android:label="NI Trades"
-        android:icon="@drawable/ni_trade_logo">
+        android:icon="@drawable/ni_trade_logo_round">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"
