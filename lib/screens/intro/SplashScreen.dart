@@ -6,8 +6,8 @@ import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/screens/auth_screen/login_screen.dart';
 import 'package:ni_trades/screens/homescreen/homescreen.dart';
 import 'package:ni_trades/screens/intro/onboarding_screen.dart';
-import 'package:ni_trades/util/app_theme.dart';
-import 'package:ni_trades/util/app_theme.dart';
+import 'package:ni_trades/theme/app_theme.dart';
+import 'package:ni_trades/theme/app_theme.dart';
 import 'package:ni_trades/wrapper.dart';
 
 class SplashScreen extends StatefulWidget {

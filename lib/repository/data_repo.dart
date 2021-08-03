@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,6 +7,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack/flutter_paystack.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
+
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/model/api_response.dart';
 import 'package:ni_trades/model/category.dart';
@@ -19,8 +23,6 @@ import 'package:ni_trades/model/wallet.dart';
 import 'package:ni_trades/repository/payment_repository.dart';
 import 'package:ni_trades/util/constants.dart';
 import 'package:ni_trades/util/my_utils.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
 
 class DataService {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -517,4 +519,65 @@ class DataService {
           data: 'Your request failed, please try again!', error: true);
     }
   }
+}
+
+class Message {
+  final String id;
+  final String senderId;
+  final String text;
+  Message({
+    required this.id,
+    required this.senderId,
+    required this.text,
+  });
+  final bool read = false;
+
+  Message copyWith({
+    String? id,
+    String? senderId,
+    String? text,
+  }) {
+    return Message(
+      id: id ?? this.id,
+      senderId: senderId ?? this.senderId,
+      text: text ?? this.text,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'senderId': senderId,
+      'text': text,
+    };
+  }
+
+  factory Message.fromMap(Map<String, dynamic> map) {
+    return Message(
+      id: map['id'],
+      senderId: map['senderId'],
+      text: map['text'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Message.fromJson(String source) =>
+      Message.fromMap(json.decode(source));
+
+  @override
+  String toString() => 'Message(id: $id, senderId: $senderId, text: $text)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Message &&
+        other.id == id &&
+        other.senderId == senderId &&
+        other.text == text;
+  }
+
+  @override
+  int get hashCode => id.hashCode ^ senderId.hashCode ^ text.hashCode;
 }

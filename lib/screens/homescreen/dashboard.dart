@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -19,9 +21,11 @@ import 'package:ni_trades/screens/homescreen/widgets/recent_investments_widget.d
 import 'package:ni_trades/screens/investment/investment_selection_screen.dart';
 import 'package:ni_trades/screens/payment/widgets/checkout_widget.dart';
 import 'package:ni_trades/screens/profile/user_profile_screen.dart';
+import 'package:ni_trades/services/notification_services.dart';
 import 'package:ni_trades/util/constants.dart';
 import 'package:ni_trades/util/my_utils.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:ni_trades/di/onesignal/injection_container.dart' as di;
 
 class DashBoardScreen extends StatefulWidget {
   @override
@@ -408,97 +412,106 @@ class _QuickActionsWidgetState extends State<QuickActionsWidget> {
                       onPressed: () async {
                         showDialog(
                           context: context,
-                          builder: (context) => AlertDialog(
-                            backgroundColor:
-                                Theme.of(context).scaffoldBackgroundColor,
-                            title: Text('Wallet Fund Amount'),
-                            content: Form(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'How much do you want to fund (\u20A6)',
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary),
-                                  ),
-                                  SizedBox(height: 8.0),
-                                  TextFormField(
-                                    controller: amountTextController,
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary),
-                                    decoration: InputDecoration(
-                                        prefixIcon: Icon(
-                                          Icons.payment,
+                          builder: (context) => BackdropFilter(
+                            filter: ImageFilter.blur(
+                              sigmaX: 10.0,
+                              sigmaY: 10.0,
+                            ),
+                            child: AlertDialog(
+                              backgroundColor:
+                                  Theme.of(context).scaffoldBackgroundColor,
+                              title: Text('Wallet Fund Amount'),
+                              content: Form(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'How much do you want to fund (\u20A6)',
+                                      style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
-                                              .secondary,
-                                        ),
-                                        hintText: 'Enter amount',
-                                        hintStyle: TextStyle(
+                                              .onPrimary),
+                                    ),
+                                    SizedBox(height: 8.0),
+                                    TextFormField(
+                                      controller: amountTextController,
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary),
+                                      decoration: InputDecoration(
+                                          prefixIcon: Icon(
+                                            Icons.payment,
                                             color: Theme.of(context)
                                                 .colorScheme
-                                                .onPrimary),
-                                        fillColor: Theme.of(context).cardColor,
-                                        filled: true,
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                width: 1,
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary),
-                                            borderRadius:
-                                                BorderRadius.circular(8.0))),
-                                    validator: MultiValidator([
-                                      RequiredValidator(
-                                          errorText: 'Amount is required'),
-                                      MinLengthValidator(3,
-                                          errorText:
-                                              'Fund amount must start from \2UA6100'),
-                                    ]),
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                    ],
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            actions: [
-                              MaterialButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                  showMaterialModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => CheckoutWidget(
-                                        paymentType: PaymentType.FUND,
-                                        fundAmount: int.parse(
-                                            amountTextController.text)),
-                                  );
-                                },
-                                disabledColor: Theme.of(context)
-                                    .colorScheme
-                                    .secondary
-                                    .withOpacity(0.4),
-                                minWidth: MediaQuery.of(context).size.width,
-                                padding: EdgeInsets.all(16.0),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0)),
-                                color: Theme.of(context).colorScheme.secondary,
-                                child: Text(
-                                  'Continue',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.bold),
+                                                .secondary,
+                                          ),
+                                          hintText: 'Enter amount',
+                                          hintStyle: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary),
+                                          fillColor:
+                                              Theme.of(context).cardColor,
+                                          filled: true,
+                                          border: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  width: 1,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary),
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0))),
+                                      validator: MultiValidator([
+                                        RequiredValidator(
+                                            errorText: 'Amount is required'),
+                                        MinLengthValidator(3,
+                                            errorText:
+                                                'Fund amount must start from \2UA6100'),
+                                      ]),
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      keyboardType: TextInputType.number,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
+                              actions: [
+                                MaterialButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    showMaterialModalBottomSheet(
+                                      context: context,
+                                      builder: (context) => CheckoutWidget(
+                                          paymentType: PaymentType.FUND,
+                                          fundAmount: int.parse(
+                                              amountTextController.text)),
+                                    );
+                                  },
+                                  disabledColor: Theme.of(context)
+                                      .colorScheme
+                                      .secondary
+                                      .withOpacity(0.4),
+                                  minWidth: MediaQuery.of(context).size.width,
+                                  padding: EdgeInsets.all(16.0),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8.0)),
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  child: Text(
+                                    'Continue',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
+                        di.injector.get<NotificationService>().sendNotification();
                       });
                 },
               )),

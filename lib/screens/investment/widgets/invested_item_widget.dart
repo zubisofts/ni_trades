@@ -77,12 +77,13 @@ class _InvestedItemWidgetState extends State<InvestedItemWidget> {
                     // ),
                     Expanded(
                       flex: 2,
-                      child: SvgPicture.asset(
-                        getCategoryImage(investmentPackage.category),
-                        width: 100,
-                        height: 100,
+                      child: CachedNetworkImage(
+                        imageUrl: investmentPackage.imageCoverUrl,
+                        fit: BoxFit.cover,
+                        width: 200,
+                        // height: 100,
                         // color: getCategoryColor(investmentPackage.category),
-                        colorBlendMode: BlendMode.multiply,
+                        // colorBlendMode: BlendMode.multiply,
                       ),
                     ),
                     SizedBox(

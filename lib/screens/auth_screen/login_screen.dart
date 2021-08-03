@@ -61,10 +61,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           fontSize: 32.0,
                           fontWeight: FontWeight.bold)),
                   SizedBox(
-                    height: 16,
+                    height: 8,
                   ),
-                  Text('Please login to your account',
-                      style: TextStyle(color: Colors.grey, fontSize: 16.0)),
+                  Text(
+                      'Get started on your journey to financial freedom, invest with us today!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey, fontSize: 14.0)),
                   SizedBox(height: 32.0),
                   Form(
                     child: Shortcuts(

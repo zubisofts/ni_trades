@@ -83,10 +83,26 @@ class _InvestmentFormScreenState extends State<InvestmentFormScreen> {
                     ),
                   ),
                   SizedBox(
+                    height: 16.0,
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8.0),
+                        color: Theme.of(context).cardColor.withOpacity(0.3)),
+                    child: Text(
+                      'At NI Trades, we offer You a monthly return of 10% on every invested sum for a duration of 6 months with capital rolled back after the sixth month',
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.secondary),
+                    ),
+                  ),
+                  SizedBox(
                     height: 32.0,
                   ),
                   Container(
-                    height: 300,
+                    height: 245,
                     child: PageView(
                       controller: pageController,
                       physics: BouncingScrollPhysics(),
@@ -258,7 +274,10 @@ class _InvestmentFormScreenState extends State<InvestmentFormScreen> {
                             duration: widget.investmentPackage.durationInMonths,
                             returns: widget.investmentPackage.returns,
                             status: InvestmentStatus.Pending,
-                            isDue: false);
+                            isDue: false,
+                            count: 0,
+                            currentInterval:
+                                DateTime.now().millisecondsSinceEpoch);
                         // invest(investment, paystack);
 
                         if (selectedPaymentSource == 0) {
@@ -345,7 +364,7 @@ class _PayFormScreenState extends State<PayFormScreen> {
         Text(
           'How much do you want to invest on this?',
           style: TextStyle(
-              fontSize: 14, color: Theme.of(context).colorScheme.onPrimary),
+              fontSize: 16, color: Theme.of(context).colorScheme.onPrimary),
         ),
         SizedBox(height: 16.0),
         Padding(
@@ -400,7 +419,7 @@ class _PayFormScreenState extends State<PayFormScreen> {
           height: 16.0,
         ),
         Text(
-          'At the end of ${widget.investmentPackage.durationInMonths} months, you will get returns worth of ${currencyFormatter.format(returnsAmount)}',
+          'At the end of every month, you will get returns worth of ${currencyFormatter.format(returnsAmount)} on investing with ${currencyFormatter.format(int.parse(widget.textController.text.isEmpty ? '0' : widget.textController.text))}',
           style: TextStyle(
               fontSize: 14,
               // fontWeight: FontWeight.bold,

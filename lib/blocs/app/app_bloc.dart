@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:ni_trades/util/app_theme.dart';
+import 'package:ni_trades/theme/app_theme.dart';
 
 part 'app_event.dart';
 part 'app_state.dart';

@@ -5,10 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/blocs/data/data_bloc.dart';
 import 'package:ni_trades/model/investment.dart';
-import 'package:ni_trades/screens/investment/investment_selection_screen.dart';
 import 'package:ni_trades/screens/investment/investment_wallet_dashboard.dart';
 import 'package:ni_trades/screens/investment/widgets/invested_item_widget.dart';
-import 'package:page_transition/page_transition.dart';
 
 class InvestmentScreen extends StatefulWidget {
   @override

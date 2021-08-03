@@ -7,17 +7,33 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:ni_trades/blocs/app/app_bloc.dart';
 import 'package:ni_trades/blocs/bloc/auth_bloc.dart';
 import 'package:ni_trades/blocs/data/data_bloc.dart';
+import 'package:ni_trades/di/onesignal/injection_container.dart' as di;
 import 'package:ni_trades/repository/auth_repo.dart';
 import 'package:ni_trades/repository/data_repo.dart';
 import 'package:ni_trades/screens/intro/SplashScreen.dart';
-import 'package:ni_trades/util/app_theme.dart';
+import 'package:ni_trades/services/notification_services.dart';
+import 'package:ni_trades/theme/app_theme.dart';
+import 'package:ni_trades/util/constants.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   EquatableConfig.stringify = kDebugMode;
   // Bloc.observer = SimpleBlocObserver();
   await Firebase.initializeApp();
-  runApp(MyApp());
+
+  // Initialize GetIt Package
+  await di.init();
+
+  // Setup onesignal
+  di.injector.get<NotificationService>().initOneSignal();
+
+  await SentryFlutter.init(
+    (options) {
+      options.dsn = Constants.SENDTRY_CDN;
+    },
+    appRunner: () => runApp(MyApp()),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -79,6 +95,7 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+
 }
 
 class App extends StatefulWidget {

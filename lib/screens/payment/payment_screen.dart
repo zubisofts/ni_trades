@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -162,95 +163,103 @@ class ActionsRow extends StatelessWidget {
                 onPressed: () {
                   showDialog(
                       context: context,
-                      builder: (context) => AlertDialog(
-                            backgroundColor:
-                                Theme.of(context).scaffoldBackgroundColor,
-                            title: Text('Wallet Fund Amount'),
-                            content: Form(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'How much do you want to fund (\u20A6)',
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary),
-                                  ),
-                                  SizedBox(height: 8.0),
-                                  TextFormField(
-                                    controller: amountTextController,
-                                    style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onPrimary),
-                                    decoration: InputDecoration(
-                                        prefixIcon: Icon(
-                                          Icons.payment,
+                      builder: (context) => BackdropFilter(
+                            filter: ImageFilter.blur(
+                              sigmaX: 10.0,
+                              sigmaY: 10.0,
+                            ),
+                            child: AlertDialog(
+                              backgroundColor:
+                                  Theme.of(context).scaffoldBackgroundColor,
+                              title: Text('Wallet Fund Amount'),
+                              content: Form(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      'How much do you want to fund (\u20A6)',
+                                      style: TextStyle(
                                           color: Theme.of(context)
                                               .colorScheme
-                                              .secondary,
-                                        ),
-                                        hintText: 'Amount',
-                                        hintStyle: TextStyle(
+                                              .onPrimary),
+                                    ),
+                                    SizedBox(height: 8.0),
+                                    TextFormField(
+                                      controller: amountTextController,
+                                      style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary),
+                                      decoration: InputDecoration(
+                                          prefixIcon: Icon(
+                                            Icons.payment,
                                             color: Theme.of(context)
                                                 .colorScheme
-                                                .onPrimary),
-                                        fillColor: Theme.of(context).cardColor,
-                                        filled: true,
-                                        border: OutlineInputBorder(
-                                            borderSide: BorderSide(
-                                                color: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary,
-                                                width: 1),
-                                            borderRadius:
-                                                BorderRadius.circular(8.0))),
-                                    validator: MultiValidator([
-                                      RequiredValidator(
-                                          errorText: 'Amount is required'),
-                                      MinLengthValidator(3,
-                                          errorText:
-                                              'Fund amount must start from \2UA6100'),
-                                    ]),
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                    ],
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            actions: [
-                              MaterialButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                  showMaterialModalBottomSheet(
-                                    context: context,
-                                    builder: (context) => CheckoutWidget(
-                                        paymentType: PaymentType.FUND,
-                                        fundAmount: int.parse(
-                                            amountTextController.text)),
-                                  );
-                                },
-                                disabledColor: Theme.of(context)
-                                    .colorScheme
-                                    .secondary
-                                    .withOpacity(0.4),
-                                minWidth: MediaQuery.of(context).size.width,
-                                padding: EdgeInsets.all(16.0),
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0)),
-                                color: Theme.of(context).colorScheme.secondary,
-                                child: Text(
-                                  'Continue',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16.0,
-                                      fontWeight: FontWeight.bold),
+                                                .secondary,
+                                          ),
+                                          hintText: 'Amount',
+                                          hintStyle: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary),
+                                          fillColor:
+                                              Theme.of(context).cardColor,
+                                          filled: true,
+                                          border: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  width: 1),
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0))),
+                                      validator: MultiValidator([
+                                        RequiredValidator(
+                                            errorText: 'Amount is required'),
+                                        MinLengthValidator(3,
+                                            errorText:
+                                                'Fund amount must start from \2UA6100'),
+                                      ]),
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      keyboardType: TextInputType.number,
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
+                              actions: [
+                                MaterialButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    showMaterialModalBottomSheet(
+                                      context: context,
+                                      builder: (context) => CheckoutWidget(
+                                          paymentType: PaymentType.FUND,
+                                          fundAmount: int.parse(
+                                              amountTextController.text)),
+                                    );
+                                  },
+                                  disabledColor: Theme.of(context)
+                                      .colorScheme
+                                      .secondary
+                                      .withOpacity(0.4),
+                                  minWidth: MediaQuery.of(context).size.width,
+                                  padding: EdgeInsets.all(16.0),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8.0)),
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  child: Text(
+                                    'Continue',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ));
                 });
           },

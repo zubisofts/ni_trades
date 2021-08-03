@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ni_trades/screens/auth_screen/login_screen.dart';
-import 'package:ni_trades/util/app_theme.dart';
+import 'package:ni_trades/theme/app_theme.dart';
 import 'package:sk_onboarding_screen/sk_onboarding_model.dart';
 import 'package:sk_onboarding_screen/sk_onboarding_screen.dart';
 

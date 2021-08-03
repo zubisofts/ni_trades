@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -255,68 +257,74 @@ class _WithdrawalScreenState extends State<WithdrawalScreen> {
       String accountNumber, String bankCode, String name) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Text(
-          'Confirm',
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.green),
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: 10.0,
+          sigmaY: 10.0,
         ),
-        content: RichText(
+        child: AlertDialog(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Text(
+            'Confirm',
             textAlign: TextAlign.center,
-            text: TextSpan(children: [
-              TextSpan(
-                text: 'Confirm if ',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: 16.0,
-                    fontFamily: 'Poppins-Medium'),
-              ),
-              TextSpan(
-                text: '$name',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0,
-                    fontFamily: 'Poppins-Medium'),
-              ),
-              TextSpan(
-                text: ' matches your account information...',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: 16.0,
-                    fontFamily: 'Poppins-Medium'),
-              )
-            ])),
-        actions: [
-          TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                var withdrawRequest = WithdrawRequest(
-                    id: '',
-                    accountName: name,
-                    amount: amount,
-                    accountNumber: accountNumber,
-                    bankCode: bankCode,
-                    userId: AuthBloc.uid!,
-                    status: WithdrawalStatus.Pending,
-                    timestamp: 0);
-                context
-                    .read<DataBloc>()
-                    .add(WithdrawalRequestEvent(withdrawRequest));
-              },
-              child: Text(
-                'Continue',
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
-              )),
-          TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: Colors.redAccent),
-              ))
-        ],
+            style: TextStyle(color: Colors.green),
+          ),
+          content: RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(children: [
+                TextSpan(
+                  text: 'Confirm if ',
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontSize: 16.0,
+                      fontFamily: 'Poppins-Medium'),
+                ),
+                TextSpan(
+                  text: '$name',
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16.0,
+                      fontFamily: 'Poppins-Medium'),
+                ),
+                TextSpan(
+                  text: ' matches your account information...',
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontSize: 16.0,
+                      fontFamily: 'Poppins-Medium'),
+                )
+              ])),
+          actions: [
+            TextButton(
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                  var withdrawRequest = WithdrawRequest(
+                      id: '',
+                      accountName: name,
+                      amount: amount,
+                      accountNumber: accountNumber,
+                      bankCode: bankCode,
+                      userId: AuthBloc.uid!,
+                      status: WithdrawalStatus.Pending,
+                      timestamp: 0);
+                  context
+                      .read<DataBloc>()
+                      .add(WithdrawalRequestEvent(withdrawRequest));
+                },
+                child: Text(
+                  'Continue',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.secondary),
+                )),
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(color: Colors.redAccent),
+                ))
+          ],
+        ),
       ),
     );
   }

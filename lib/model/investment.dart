@@ -13,31 +13,37 @@ class Investment with EquatableMixin {
   final int returns;
   final InvestmentStatus status;
   final bool isDue;
-  Investment({
-    required this.id,
-    required this.packageId,
-    required this.userId,
-    required this.refId,
-    required this.amount,
-    required this.duration,
-    required this.returns,
-    required this.startDate,
-    required this.status,
-    required this.isDue,
-  });
+  final int count;
+  final int currentInterval;
+  Investment(
+      {required this.id,
+      required this.packageId,
+      required this.userId,
+      required this.refId,
+      required this.amount,
+      required this.duration,
+      required this.returns,
+      required this.startDate,
+      required this.status,
+      required this.isDue,
+      required this.count,
+      required this.currentInterval
+      });
 
-  Investment copyWith({
-    String? id,
-    String? packageId,
-    String? userId,
-    String? refId,
-    int? amount,
-    int? startDate,
-    int? duration,
-    int? returns,
-    InvestmentStatus? status,
-    bool? isDue,
-  }) {
+  Investment copyWith(
+      {String? id,
+      String? packageId,
+      String? userId,
+      String? refId,
+      int? amount,
+      int? startDate,
+      int? duration,
+      int? returns,
+      InvestmentStatus? status,
+      bool? isDue,
+      int? count,
+      int? currentInterval,
+      }) {
     return Investment(
       id: id ?? this.id,
       packageId: packageId ?? this.packageId,
@@ -49,6 +55,8 @@ class Investment with EquatableMixin {
       returns: returns ?? this.returns,
       status: status ?? this.status,
       isDue: isDue ?? this.isDue,
+      count: count ?? this.count,
+      currentInterval: currentInterval ?? this.currentInterval
     );
   }
 
@@ -64,6 +72,8 @@ class Investment with EquatableMixin {
       'status': typeValues.reverse[status],
       'returns': returns,
       'isDue': isDue,
+      'count': count,
+      'currentInterval': currentInterval,
     };
   }
 
@@ -79,6 +89,8 @@ class Investment with EquatableMixin {
       returns: map['returns'],
       status: typeValues.map[map["status"]]!,
       isDue: map['isDue'],
+      count: map['count'],
+      currentInterval: map['currentInterval']
     );
   }
 
@@ -103,6 +115,8 @@ class Investment with EquatableMixin {
       returns,
       status,
       isDue,
+      count,
+      currentInterval
     ];
   }
 }

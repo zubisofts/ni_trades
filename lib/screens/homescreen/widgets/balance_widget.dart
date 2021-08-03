@@ -23,7 +23,7 @@ class _BalanceWidgetState extends State<BalanceWidget> {
   void initState() {
     currencyFormatter = NumberFormat.currency(
       decimalDigits: 2,
-      name: "NGN ",
+      name: "₦",
     );
     isWalletVisible = true;
     super.initState();

@@ -68,7 +68,7 @@ class _SignupScreenState extends State<SignupScreen> {
               SizedBox(
                 height: 8,
               ),
-              Text('Create an account to NI Trade to get started',
+              Text('Create an account to NI Trade to get started on your journey to financial freedom',
                   style: TextStyle(
                       fontSize: 14.0,
                       color: Theme.of(context).colorScheme.onPrimary)),

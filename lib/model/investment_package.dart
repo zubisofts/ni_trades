@@ -12,6 +12,7 @@ class InvestmentPackage with EquatableMixin {
   String imageCoverUrl;
   bool isOpen;
   int maxCount;
+  int bgColor;
   InvestmentPackage({
     required this.id,
     required this.title,
@@ -22,6 +23,7 @@ class InvestmentPackage with EquatableMixin {
     required this.imageCoverUrl,
     required this.isOpen,
     required this.maxCount,
+    required this.bgColor,
   });
 
   InvestmentPackage copyWith({
@@ -34,6 +36,7 @@ class InvestmentPackage with EquatableMixin {
     String? imageCoverUrl,
     bool? isOpen,
     int? maxCount,
+    int? bgColor,
   }) {
     return InvestmentPackage(
       id: id ?? this.id,
@@ -45,6 +48,7 @@ class InvestmentPackage with EquatableMixin {
       imageCoverUrl: imageCoverUrl ?? this.imageCoverUrl,
       isOpen: isOpen ?? this.isOpen,
       maxCount: maxCount ?? this.maxCount,
+      bgColor: bgColor ?? this.bgColor,
     );
   }
 
@@ -59,6 +63,7 @@ class InvestmentPackage with EquatableMixin {
       'imageCoverUrl': imageCoverUrl,
       'isOpen': isOpen,
       'maxCount': maxCount,
+      'bgColor': bgColor,
     };
   }
 
@@ -73,6 +78,7 @@ class InvestmentPackage with EquatableMixin {
       imageCoverUrl: map['imageCoverUrl'],
       isOpen: map['isOpen'],
       maxCount: map['maxCount'],
+      bgColor: map['bgColor'],
     );
   }
 
@@ -96,6 +102,7 @@ class InvestmentPackage with EquatableMixin {
       imageCoverUrl,
       isOpen,
       maxCount,
+      bgColor,
     ];
   }
 }

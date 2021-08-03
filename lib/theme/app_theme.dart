@@ -1,25 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ni_trades/theme/app_colors.dart' as AppColors;
 import 'package:ni_trades/util/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AppTheme {
   //
+
   AppTheme._();
 
   static final ThemeData lightTheme = ThemeData(
-    scaffoldBackgroundColor: Colors.white,
-    fontFamily: "Poppins-Medium",
-    cardColor: Color(0xFF393939).withOpacity(0.1),
+    scaffoldBackgroundColor: AppColors.lightBackgroundColor,
+    fontFamily: "BR Firma Regular",
+    cardColor: AppColors.lightCardColor,
     appBarTheme: AppBarTheme(
-      color: Colors.white,
+      color: AppColors.white,
       brightness: Brightness.light,
       systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
-        statusBarColor: Colors.white,
+        statusBarColor: AppColors.white,
       ),
       textTheme: TextTheme(
         caption: TextStyle(
-          color: Colors.black,
+          color: AppColors.black,
         ),
       ),
       iconTheme: IconThemeData(
@@ -27,12 +29,11 @@ class AppTheme {
       ),
     ),
     colorScheme: ColorScheme.light(
-      primary: Colors.white,
-      onPrimary: Colors.black,
-      primaryVariant: Colors.white38,
-      secondary: Color(0xFFfcfa23c),
-      onSecondary: Colors.blueGrey,
-    ),
+        primary: AppColors.white,
+        onPrimary: AppColors.black,
+        primaryVariant: Colors.white38,
+        secondary: Color(0xFFfcfa23c),
+        onSecondary: Colors.blueGrey),
     cardTheme: CardTheme(
       color: Color(0xFF393939).withOpacity(0.1),
     ),
@@ -61,7 +62,7 @@ class AppTheme {
   static final ThemeData darkTheme = ThemeData(
     scaffoldBackgroundColor: Color(0xFF121212),
     cardColor: Color(0xFF393939),
-    fontFamily: "Poppins-Medium",
+    fontFamily: "BR Firma Regular",
     appBarTheme: AppBarTheme(
       color: Color(0xFF121212),
       brightness: Brightness.dark,
@@ -192,7 +193,6 @@ class AppTheme {
 
   static Color getTextColor(Color color) {
     int d = 0;
-
 // Counting the perceptive luminance - human eye favors green color...
     double luminance =
         (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;

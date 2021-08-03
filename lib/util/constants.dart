@@ -9,6 +9,10 @@ class Constants {
   static const PAYSTACK_SECRETE =
       "sk_test_e3226b354c8d421ec1cc846736e87d0414adde89";
 
+  static const ONE_SIGNAL_APP_ID = "acaa1606-1341-49f5-b73b-1084ec634c7f";
+
+  static const SENDTRY_CDN="https://4a62fa3f823d44a5840101098956c37c@o934062.ingest.sentry.io/5883364";
+
   static const MAP_API_KEY = "AIzaSyAdcDU38dn79bKr5pJwYxEt1deLz_Hz34E";
   static const OTP_BASE_URL = "https://ni-trades-api.herokuapp.com";
 

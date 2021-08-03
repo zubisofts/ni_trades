@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_paystack/flutter_paystack.dart';
@@ -177,6 +179,7 @@ class AppUtils {
         headerAnimationLoop: false,
         dismissOnTouchOutside: false,
         dismissOnBackKeyPress: false,
+        body: Container(),
         dialogBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
         btnOk: TextButton(
           onPressed: () {
@@ -222,35 +225,48 @@ class AppUtils {
       context: context,
       barrierColor: Theme.of(context).cardColor.withOpacity(0.3),
       builder: (context) => Center(
-        child: SpinKitDualRing(
-          color: Theme.of(context).colorScheme.secondary,
-          lineWidth: 2,
-          size: 32,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 10.0,
+            sigmaY: 10.0,
+          ),
+          child: SpinKitDualRing(
+            color: Theme.of(context).colorScheme.secondary,
+            lineWidth: 2,
+            size: 32,
+          ),
         ),
       ),
     );
   }
 
-static void showLoaderDialog(BuildContext context, String msg) {
+  static void showLoaderDialog(BuildContext context, String msg) {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        content: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SpinKitDualRing(
-              color: Theme.of(context).colorScheme.secondary,
-              lineWidth: 2,
-              size: 50.0,
-            ),
-            Text(
-              msg,
-              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
-            )
-          ],
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: 10.0,
+          sigmaY: 10.0,
+        ),
+        child: AlertDialog(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          content: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SpinKitDualRing(
+                color: Theme.of(context).colorScheme.secondary,
+                lineWidth: 2,
+                size: 50.0,
+              ),
+              Text(
+                msg,
+                style:
+                    TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -259,31 +275,38 @@ static void showLoaderDialog(BuildContext context, String msg) {
   static void showErrorDialog(BuildContext context, String s) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: Icon(
-          Icons.mood_bad_outlined,
-          size: 50,
-          color: Colors.red,
+      builder: (context) => BackdropFilter(
+        filter: ImageFilter.blur(
+          sigmaX: 10.0,
+          sigmaY: 10.0,
         ),
-        content: Text(
-          s,
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+        child: AlertDialog(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Icon(
+            Icons.mood_bad_outlined,
+            size: 50,
+            color: Colors.red,
+          ),
+          content: Text(
+            s,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text(
+                  'OK',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.secondary),
+                ))
+          ],
         ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'OK',
-                style:
-                    TextStyle(color: Theme.of(context).colorScheme.secondary),
-              ))
-        ],
       ),
     );
   }
-static void showSuccessDialog(BuildContext context, String message) {
+
+  static void showSuccessDialog(BuildContext context, String message) {
     AwesomeDialog(
         context: context,
         title: 'Success',
@@ -313,6 +336,4 @@ static void showSuccessDialog(BuildContext context, String message) {
           child: Text('Dismiss'),
         )).show();
   }
-
-
 }
