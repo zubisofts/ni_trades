@@ -23,7 +23,7 @@ void main() async {
   await Firebase.initializeApp();
 
   // Initialize GetIt Package
-  await di.init();
+  await di.init(); 
 
   // Setup onesignal
   di.injector.get<NotificationService>().initOneSignal();
